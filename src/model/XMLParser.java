@@ -1,5 +1,6 @@
 package model;
 
+import org.omg.CORBA.PUBLIC_MEMBER;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -22,6 +23,10 @@ public class XMLParser {
     public XMLParser(){
         apiURL = "http://api.sr.se/api/v2/channels";
         channels = new ArrayList<>();
+    }
+
+    public void readPagination(){
+        //pagination class maybe unnecessary
     }
 
     public void readAPI() {
@@ -66,7 +71,7 @@ public class XMLParser {
         return channels;
     }
 
-    public void readSchedulePagination(String scheduleURL){
+ /*   public void readSchedulePagination(String scheduleURL){
         try {
             DocumentBuilderFactory DBF = DocumentBuilderFactory.newInstance();
             DocumentBuilder DB = DBF.newDocumentBuilder();
@@ -95,7 +100,7 @@ public class XMLParser {
         } catch (ParserConfigurationException | SAXException | IOException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
     public SchedulePage getSP() {
         return SP;

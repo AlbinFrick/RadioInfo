@@ -18,19 +18,13 @@ public class Controller {
             System.out.println("Channel Image URL: " + c.getImageURL());
             System.out.println("Channel scheduleURL: " + c.getScheduleURL());
             System.out.println("Channel siteURL: " + c.getSiteURL());
-            parser.readSchedulePagination(c.getScheduleURL());
-            SchedulePage sp = parser.getSP();
-            System.out.println(sp.getPageNr());
-            System.out.println(sp.getNextPageURL());
-            System.out.println(sp.getPreviousPageURL());
-            System.out.println();
-            System.out.println();
+
         }
 
-        parser.readSchedulePagination(channels.get(8).getScheduleURL());
+        /*parser.readSchedulePagination(channels.get(8).getScheduleURL());
         SchedulePage sp = parser.getSP();
         System.out.println(sp.getPageNr());
         System.out.println(sp.getNextPageURL());
-        System.out.println(sp.getPreviousPageURL());
+        System.out.println(sp.getPreviousPageURL());*/
     }
 }
