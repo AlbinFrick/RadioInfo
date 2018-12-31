@@ -1,6 +1,5 @@
 package model;
 
-import org.omg.CORBA.PUBLIC_MEMBER;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -11,14 +10,18 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
 public class XMLParser {
     private String apiURL;
     private ArrayList<Channel> channels;
-    private SchedulePage SP;
+    private String nextPageURL;
+    private String previousPageURL;
+    private int pageNr;
+    private int size;
+    private int totalHits;
+    private int totalPages;
 
     public XMLParser(){
         apiURL = "http://api.sr.se/api/v2/channels";
@@ -35,11 +38,23 @@ public class XMLParser {
             DocumentBuilder DB = DBF.newDocumentBuilder();
             Document doc = DB.parse((new URL(apiURL).openStream()));
             doc.getDocumentElement().normalize();
-            NodeList nl =  doc.getElementsByTagName("channel");
-            for (int i = 0; i < nl.getLength(); i++){
-                Node nNode = nl.item(i);
-                if (nNode.getNodeType() == Node.ELEMENT_NODE){
+
+            NodeList paginationNodeList = doc.getElementsByTagName("pagination");
+            for (int k = 0; k < paginationNodeList.getLength(); k++){
+                Node nNode = paginationNodeList.item(k);
+                if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                     Element elem = (Element) nNode;
+                    NodeList childNodeListPagination = elem.getChildNodes();
+
+                    pageNr = Integer.parseInt(getTextContentFromNode(childNodeListPagination.item(1)));
+                }
+            }
+
+            NodeList channelNodeList =  doc.getElementsByTagName("channel");
+            for (int i = 0; i < channelNodeList.getLength(); i++){
+                Node nNode1 = channelNodeList.item(i);
+                if (nNode1.getNodeType() == Node.ELEMENT_NODE){
+                    Element elem = (Element) nNode1;
                     Channel channel = new Channel(Integer.parseInt(elem.getAttribute("id")),
                                                                     elem.getAttribute("name"));
                     NodeList childNodeList = elem.getChildNodes();
