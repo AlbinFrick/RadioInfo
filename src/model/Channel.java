@@ -10,7 +10,6 @@ public class Channel {
     private String liveAudioURL;
     private String liveAudioStatKey;
     private String scheduleURL;
-    private String xmlTvID;
 
     public Channel(int channelID, String channelName){
         this.channelID = channelID;
@@ -79,14 +78,6 @@ public class Channel {
 
     public void setScheduleURL(String scheduleURL) {
         this.scheduleURL = scheduleURL;
-    }
-
-    public String getXmlTvID() {
-        return xmlTvID;
-    }
-
-    public void setXmlTvID(String xmlTvID) {
-        this.xmlTvID = xmlTvID;
     }
 
     public String getSiteURL() {

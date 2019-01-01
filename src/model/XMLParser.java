@@ -1,5 +1,6 @@
 package model;
 
+import com.sun.webkit.dom.NodeListImpl;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -16,8 +17,6 @@ import java.util.ArrayList;
 public class XMLParser {
     private String apiURL;
     private ArrayList<Channel> channels;
-    private String nextPageURL;
-    private String previousPageURL;
     private int pageNr;
     private int size;
     private int totalHits;
@@ -28,27 +27,14 @@ public class XMLParser {
         channels = new ArrayList<>();
     }
 
-    public void readPagination(){
-        //pagination class maybe unnecessary
-    }
 
-    public void readAPI() {
+    public void readChannelAPI() {
         try{
             DocumentBuilderFactory DBF = DocumentBuilderFactory.newInstance();
             DocumentBuilder DB = DBF.newDocumentBuilder();
             Document doc = DB.parse((new URL(apiURL).openStream()));
             doc.getDocumentElement().normalize();
-
-            NodeList paginationNodeList = doc.getElementsByTagName("pagination");
-            for (int k = 0; k < paginationNodeList.getLength(); k++){
-                Node nNode = paginationNodeList.item(k);
-                if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-                    Element elem = (Element) nNode;
-                    NodeList childNodeListPagination = elem.getChildNodes();
-
-                    pageNr = Integer.parseInt(getTextContentFromNode(childNodeListPagination.item(1)));
-                }
-            }
+            readPagination(doc.getElementsByTagName("pagination"));
 
             NodeList channelNodeList =  doc.getElementsByTagName("channel");
             for (int i = 0; i < channelNodeList.getLength(); i++){
@@ -58,19 +44,46 @@ public class XMLParser {
                     Channel channel = new Channel(Integer.parseInt(elem.getAttribute("id")),
                                                                     elem.getAttribute("name"));
                     NodeList childNodeList = elem.getChildNodes();
+
                     //index is always odd.
                     channel.setImageURL(getTextContentFromNode(childNodeList.item(1)));
                     channel.setTagLine(getTextContentFromNode(childNodeList.item(7)));
                     channel.setSiteURL(getTextContentFromNode(childNodeList.item(9)));
-                    //index 11- liveAudio. Don't know if necessary
+                    channel.setLiveAudioURL(readLiveAudio(doc.getElementsByTagName("liveaudio")));
                     channel.setScheduleURL(getTextContentFromNode(childNodeList.item(13)));
-                    channel.setXmlTvID(getTextContentFromNode(childNodeList.item(17)));
                     channels.add(channel);
                 }
             }
+            if (pageNr != totalPages)
+                readChannelAPI();
         } catch (ParserConfigurationException | IOException | SAXException e) {
             e.printStackTrace();
         }
+    }
+
+    private void readPagination(NodeList paginationNodeList){
+        for (int k = 0; k < paginationNodeList.getLength(); k++){
+            Node nNode = paginationNodeList.item(k);
+            if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                Element elem = (Element) nNode;
+                NodeList childNodeListPagination = elem.getChildNodes();
+                this.pageNr = Integer.parseInt(getTextContentFromNode(childNodeListPagination.item(1)));
+                this.size = Integer.parseInt(getTextContentFromNode(childNodeListPagination.item(3)));
+                this.totalHits = Integer.parseInt(getTextContentFromNode(childNodeListPagination.item(5)));
+                this.totalPages = Integer.parseInt(getTextContentFromNode(childNodeListPagination.item(7)));
+                this.apiURL = getTextContentFromNode(childNodeListPagination.item(9));
+            }
+        }
+    }
+
+    private String readLiveAudio(NodeList liveaudio){
+        Node node = liveaudio.item(1);
+        if (node.getNodeType() == Node.ELEMENT_NODE){
+            Element elem1 = (Element) node;
+            NodeList childLiveaudio = elem1.getChildNodes();
+            return getTextContentFromNode(childLiveaudio.item(1));
+        }else
+            return null;
     }
 
     public String getTextContentFromNode(Node n){
@@ -86,38 +99,4 @@ public class XMLParser {
         return channels;
     }
 
- /*   public void readSchedulePagination(String scheduleURL){
-        try {
-            DocumentBuilderFactory DBF = DocumentBuilderFactory.newInstance();
-            DocumentBuilder DB = DBF.newDocumentBuilder();
-            Document doc = DB.parse((new URL(scheduleURL).openStream()));
-            doc.getDocumentElement().normalize();
-            NodeList scheduleNodeList =  doc.getElementsByTagName("pagination");
-            for (int i = 0; i < scheduleNodeList.getLength(); i++){
-                Node nNode = scheduleNodeList.item(i);
-                if (nNode.getNodeType() == Node.ELEMENT_NODE){
-                    Element elem = (Element) nNode;
-                    NodeList childNodeList = elem.getChildNodes();
-                    SP = new  SchedulePage();
-                    //index is always odd.
-                    SP.setPageNr(Integer.parseInt(getTextContentFromNode(childNodeList.item(1))));
-                    SP.setSize(Integer.parseInt(getTextContentFromNode(childNodeList.item(3))));
-                    SP.setTotalHits(Integer.parseInt(getTextContentFromNode(childNodeList.item(5))));
-                    SP.setTotalPages(Integer.parseInt(getTextContentFromNode(childNodeList.item(7))));
-                    if (childNodeList.item(9) != null) {
-                        SP.setNextPageURL(getTextContentFromNode(childNodeList.item(9)));
-                    }
-
-                    if (childNodeList.item(11) != null)
-                        SP.setPreviousPageURL(getTextContentFromNode(childNodeList.item(11)));
-                }
-            }
-        } catch (ParserConfigurationException | SAXException | IOException e) {
-            e.printStackTrace();
-        }
-    }*/
-
-    public SchedulePage getSP() {
-        return SP;
-    }
 }
