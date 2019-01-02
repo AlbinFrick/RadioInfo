@@ -23,7 +23,7 @@ public class XMLParser {
     private int totalPages;
 
     public XMLParser(){
-        apiURL = "http://api.sr.se/api/v2/channels";
+        apiURL = "http://api.sr.se/api/v2/channels?pagination=false";
         channels = new ArrayList<>();
     }
 
@@ -34,7 +34,6 @@ public class XMLParser {
             DocumentBuilder DB = DBF.newDocumentBuilder();
             Document doc = DB.parse((new URL(apiURL).openStream()));
             doc.getDocumentElement().normalize();
-            readPagination(doc.getElementsByTagName("pagination"));
 
             NodeList channelNodeList =  doc.getElementsByTagName("channel");
             for (int i = 0; i < channelNodeList.getLength(); i++){
@@ -46,48 +45,33 @@ public class XMLParser {
                     NodeList childNodeList = elem.getChildNodes();
 
                     //index is always odd.
-                    channel.setImageURL(getTextContentFromNode(childNodeList.item(1)));
-                    channel.setTagLine(getTextContentFromNode(childNodeList.item(7)));
-                    channel.setSiteURL(getTextContentFromNode(childNodeList.item(9)));
-                    channel.setLiveAudioURL(readLiveAudio(doc.getElementsByTagName("liveaudio")));
-                    channel.setScheduleURL(getTextContentFromNode(childNodeList.item(13)));
+                    channel.setImageURL(getTextContentFromNode(childNodeList.item(1), "image"));
+                    channel.setTagLine(getTextContentFromNode(childNodeList.item(7), "tagline"));
+                    channel.setSiteURL(getTextContentFromNode(childNodeList.item(9), "siteurl"));
+                    channel.setLiveAudioURL(readLiveAudio(doc.getElementsByTagName("liveaudio"), i));
+                    channel.setScheduleURL(getTextContentFromNode(childNodeList.item(13), "scheduleurl"));
                     channels.add(channel);
                 }
             }
-            if (pageNr != totalPages)
-                readChannelAPI();
+
         } catch (ParserConfigurationException | IOException | SAXException e) {
             e.printStackTrace();
         }
     }
 
-    private void readPagination(NodeList paginationNodeList){
-        for (int k = 0; k < paginationNodeList.getLength(); k++){
-            Node nNode = paginationNodeList.item(k);
-            if (nNode.getNodeType() == Node.ELEMENT_NODE) {
-                Element elem = (Element) nNode;
-                NodeList childNodeListPagination = elem.getChildNodes();
-                this.pageNr = Integer.parseInt(getTextContentFromNode(childNodeListPagination.item(1)));
-                this.size = Integer.parseInt(getTextContentFromNode(childNodeListPagination.item(3)));
-                this.totalHits = Integer.parseInt(getTextContentFromNode(childNodeListPagination.item(5)));
-                this.totalPages = Integer.parseInt(getTextContentFromNode(childNodeListPagination.item(7)));
-                this.apiURL = getTextContentFromNode(childNodeListPagination.item(9));
-            }
-        }
-    }
-
-    private String readLiveAudio(NodeList liveaudio){
-        Node node = liveaudio.item(1);
+    private String readLiveAudio(NodeList liveaudio, int i){
+        Node node = liveaudio.item(i);
         if (node.getNodeType() == Node.ELEMENT_NODE){
             Element elem1 = (Element) node;
             NodeList childLiveaudio = elem1.getChildNodes();
-            return getTextContentFromNode(childLiveaudio.item(1));
+            return getTextContentFromNode(childLiveaudio.item(1), "url");
         }else
             return null;
     }
 
-    public String getTextContentFromNode(Node n){
-        if (n.getNodeType() == Node.ELEMENT_NODE){
+    public String getTextContentFromNode(Node n, String nodeName){
+
+        if (n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName().equals(nodeName)){
             Element elem  = (Element) n;
             return elem.getTextContent();
         }else

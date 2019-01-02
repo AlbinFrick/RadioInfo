@@ -1,5 +1,7 @@
 package model;
 
+import java.util.ArrayList;
+
 public class Channel {
     private int channelID;
     private String channelName;
@@ -10,10 +12,12 @@ public class Channel {
     private String liveAudioURL;
     private String liveAudioStatKey;
     private String scheduleURL;
+    private ArrayList<ScheduleEpisode> episodes;
 
     public Channel(int channelID, String channelName){
         this.channelID = channelID;
         this.channelName = channelName;
+        episodes = new ArrayList<>();
     }
 
     public int getChannelID() {
@@ -86,5 +90,13 @@ public class Channel {
 
     public void setSiteURL(String siteURL) {
         this.siteURL = siteURL;
+    }
+
+    public ArrayList<ScheduleEpisode> getEpisodes() {
+        return episodes;
+    }
+
+    public void addEpisode(ScheduleEpisode episode) {
+        episodes.add(episode);
     }
 }
