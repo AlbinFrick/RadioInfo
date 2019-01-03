@@ -1,5 +1,9 @@
 package model;
 
+import javax.swing.*;
+import java.awt.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class Channel {
@@ -12,12 +16,26 @@ public class Channel {
     private String liveAudioURL;
     private String liveAudioStatKey;
     private String scheduleURL;
-    private ArrayList<ScheduleEpisode> episodes;
+    private String errorMessage;
+    private ArrayList<Episode> episodes;
 
     public Channel(int channelID, String channelName){
         this.channelID = channelID;
         this.channelName = channelName;
         episodes = new ArrayList<>();
+    }
+
+    public ImageIcon getImage(){
+        ImageIcon imageIcon = null;
+        try {
+            imageIcon = new ImageIcon(new URL(getImageURL()));
+            Image image = imageIcon.getImage();
+            Image newImg = image.getScaledInstance(100, 100,  java.awt.Image.SCALE_SMOOTH);
+            return new ImageIcon(newImg);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public int getChannelID() {
@@ -92,11 +110,19 @@ public class Channel {
         this.siteURL = siteURL;
     }
 
-    public ArrayList<ScheduleEpisode> getEpisodes() {
+    public ArrayList<Episode> getEpisodes() {
         return episodes;
     }
 
-    public void addEpisode(ScheduleEpisode episode) {
+    public void addEpisode(Episode episode) {
         episodes.add(episode);
+    }
+
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 }

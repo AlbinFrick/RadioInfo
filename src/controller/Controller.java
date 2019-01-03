@@ -1,30 +1,58 @@
 package controller;
 
 import model.Channel;
-import model.XMLParser;
+import model.APIReader;
+import view.GUI;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 public class Controller {
     private ArrayList<Channel> channels;
+    private ArrayList<Channel> p1Channels;
+    private ArrayList<Channel> p2Channels;
+    private ArrayList<Channel> p3Channels;
+    private ArrayList<Channel> p4Channels;
+    private ArrayList<Channel> srChannels;
+    private GUI gui;
+
     public Controller(){
-        XMLParser parser = new XMLParser();
+        APIReader parser = new APIReader();
         parser.readChannelAPI();
+        parser.readScheduleAPI();
         channels = parser.getChannels();
+        parser.sortChannels();
+        p1Channels = parser.getP1();
+        p2Channels = parser.getP2();
+        p3Channels = parser.getP3();
+        p4Channels = parser.getP4();
+        srChannels = parser.getSR();
+    }
 
+    public void startController(){
+        ActionListener channelButtonPress = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                whenChannelButtonIsPressed();
+            }
+        };
 
-        for (Channel c : channels) {
-            System.out.println("Channel ID: " + c.getChannelID());
-            System.out.println("Channel Name: " + c.getChannelName());
-            System.out.println("Channel tagline: " + c.getTagLine());
-            System.out.println("Channel Image URL: " + c.getImageURL());
-            System.out.println("Channel scheduleURL: " + c.getScheduleURL());
-            System.out.println("Channel siteURL: " + c.getSiteURL());
-            System.out.println("Channel live audio: " + c.getLiveAudioURL());
-            System.out.println();
-            System.out.println();
-        }
-        System.out.println(channels.size());
+        SwingUtilities.invokeLater(()->{
+            gui = new GUI();
+            gui.setVisible(true);
+            gui.addChannelButton(p1Channels.get(0), channelButtonPress);
+            gui.addChannelButton(p2Channels.get(0), channelButtonPress);
+            gui.addChannelButton(p3Channels.get(0), channelButtonPress);
+            gui.addChannelButton(p4Channels.get(0), channelButtonPress);
+            gui.addChannelButton(srChannels.get(0), channelButtonPress);
 
+            System.out.println(channels.size());
+        });
+    }
 
+    private void whenChannelButtonIsPressed() {
+        gui.addChannelToDisplay(p1Channels.get(0));
     }
 }
