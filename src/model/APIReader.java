@@ -20,7 +20,7 @@ public class APIReader {
     private ArrayList<Channel> P2;
     private ArrayList<Channel> P3;
     private ArrayList<Channel> P4;
-    private ArrayList<Channel> SR;
+    private ArrayList<Channel> other;
 
     public APIReader(){
         apiURL = "http://api.sr.se/api/v2/channels?pagination=false";
@@ -29,7 +29,7 @@ public class APIReader {
         P2 = new ArrayList<>();
         P3 = new ArrayList<>();
         P4 = new ArrayList<>();
-        SR = new ArrayList<>();
+        other = new ArrayList<>();
     }
 
     public void readChannelAPI() {
@@ -127,8 +127,8 @@ public class APIReader {
                 P3.add(c);
             }else if (c.getChannelName().startsWith("P4")){
                 P4.add(c);
-            }else if(c.getChannelName().startsWith("SR")){
-                SR.add(c);
+            }else{
+                other.add(c);
             }
         }
     }
@@ -153,7 +153,7 @@ public class APIReader {
         return P4;
     }
 
-    public ArrayList<Channel> getSR() {
-        return SR;
+    public ArrayList<Channel> getOther() {
+        return other;
     }
 }
