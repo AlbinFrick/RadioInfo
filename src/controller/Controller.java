@@ -20,7 +20,6 @@ public class Controller {
     private ActionListener channelButtonAL;
 
     public Controller(){
-
         APIReader parser = new APIReader();
         parser.readChannelAPI();
         parser.readScheduleAPI();
@@ -34,33 +33,28 @@ public class Controller {
     }
 
     public void startController(){
-        channelButtonAL = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                for (Channel c: channels) {
-                    if (e.getActionCommand().equals(Integer.toString(c.getChannelID()))){
-                        whenChannelButtonIsPressed(c);
-                        break;
-                    }
+        channelButtonAL = e -> {
+            for (Channel c: channels) {
+                if (e.getActionCommand().equals(Integer.toString(c.getChannelID()))){
+                    whenChannelButtonIsPressed(c);
+                    break;
                 }
             }
         };
 
-        ActionListener menuFilterAL = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                switch (e.getActionCommand()){
-                    case "p1": whenMenuButtonIsPressed(p1Channels);
-                        break;
-                    case "p2": whenMenuButtonIsPressed(p2Channels);
-                        break;
-                    case "p3": whenMenuButtonIsPressed(p3Channels);
-                        break;
-                    case "p4": whenMenuButtonIsPressed(p4Channels);
-                        break;
-                    case "other": whenMenuButtonIsPressed(otherChannels);
-                        break;
-                }
+        ActionListener menuFilterAL = e -> {
+            System.out.println(e.getActionCommand());
+            switch (e.getActionCommand()){
+                case "P1": whenMenuButtonIsPressed(p1Channels);
+                    break;
+                case "P2": whenMenuButtonIsPressed(p2Channels);
+                    break;
+                case "P3": whenMenuButtonIsPressed(p3Channels);
+                    break;
+                case "P4": whenMenuButtonIsPressed(p4Channels);
+                    break;
+                case "Other": whenMenuButtonIsPressed(otherChannels);
+                    break;
             }
         };
 
@@ -70,23 +64,20 @@ public class Controller {
             for (Channel c: channels) {
                 gui.addChannelButton(c, channelButtonAL);
             }
-
-
-            System.out.println(p1Channels.get(0).getChannelName());
-            System.out.println(p1Channels.get(0).getTagLine());
-            System.out.println(p1Channels.get(0).getImageURL());
-            System.out.println(channels.size());
         });
     }
 
     private void whenChannelButtonIsPressed(Channel c) {
-        gui.addChannelToDisplay(c);
+        SwingUtilities.invokeLater(() -> gui.addChannelToDisplay(c));
     }
 
     private void whenMenuButtonIsPressed(ArrayList<Channel> channelList){
-        gui.removeChannels();
-        for (Channel c : channelList) {
-            gui.addChannelButton(c, channelButtonAL);
-        }
+        new Thread(()-> {
+            gui.removeChannels();
+            for (Channel c : channelList) {
+                gui.addChannelButton(c, channelButtonAL);
+            }
+            gui.updateGUI();
+        }).start();
     }
 }

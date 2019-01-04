@@ -3,30 +3,42 @@ package view;
 import model.Channel;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.InputMethodEvent;
 
 public class GUI extends JFrame{
     private JPanel leftPanel;
     private JPanel rightPanel;
-    private JPanel contentPanel;
+    private JTable scheduleTable;
     private JPanel channelDisplayWindow;
     private JScrollPane channelScrollPane;
-    private JScrollPane contentScrollPane;
+    private JScrollPane scheduleScrollPane;
     private JTextArea nameTaglineArea;
     private JLabel logoLabel;
+    private DefaultTableModel dft;
 
     public GUI(ActionListener menuFilterAL){
         setPreferredSize(new Dimension(979,1000));
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         pack();
+        dft = new DefaultTableModel(0,3){
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
+        scheduleTable = new JTable(dft);
         setLayout(new BorderLayout());
+        //left
         buildChannelWindow();
         buildChannelScrollPane();
+        //right
         buildRightPanel();
-        buildContentPanel();
-        buildContentScrollPane();
         buildChannelWindowDisplay();
+        buildContentScrollPane();
+        buildSchedulePanel();
         add(channelScrollPane, BorderLayout.WEST);
         add(rightPanel, BorderLayout.EAST);
         addMenu(menuFilterAL);
@@ -55,21 +67,22 @@ public class GUI extends JFrame{
     }
 
     private void buildContentScrollPane(){
-        channelScrollPane = new JScrollPane(contentPanel);
-        channelScrollPane.setPreferredSize(new Dimension(540,780));
-        channelScrollPane.setViewportView(contentPanel);
-        channelScrollPane.getVerticalScrollBar().setUnitIncrement(16);
+        scheduleScrollPane = new JScrollPane(scheduleTable);
+        scheduleScrollPane.setPreferredSize(new Dimension(540,780));
+        scheduleScrollPane.setBackground(Color.green);
+        scheduleScrollPane.setViewportView(scheduleTable);
+        scheduleScrollPane.getVerticalScrollBar().setUnitIncrement(16);
     }
 
+    private void buildSchedulePanel(){
+        JTable jTable = new JTable();
+        jTable.setPreferredSize(new Dimension(540, 780));
+        scheduleTable = jTable;
+        rightPanel.add(scheduleScrollPane, BorderLayout.SOUTH);
+    }
 
-    private void buildContentPanel(){
-        JPanel jPanel = new JPanel();
-        jPanel.setPreferredSize(new Dimension(540, 780));
-        jPanel.setBackground(Color.green);
-        JTable table = new JTable();
-        contentPanel = jPanel;
-        contentPanel.add(table);
-        rightPanel.add(jPanel, BorderLayout.SOUTH);
+    private void buildEpisodeTable(){
+
     }
 
     private void buildChannelWindowDisplay(){
@@ -77,7 +90,7 @@ public class GUI extends JFrame{
         jPanel.setPreferredSize(new Dimension(540, 150));
         jPanel.setBackground(Color.blue);
         channelDisplayWindow = jPanel;
-        rightPanel.add(jPanel, BorderLayout.NORTH);
+        rightPanel.add(channelDisplayWindow, BorderLayout.NORTH);
     }
 
     public void addChannelButton(Channel c, ActionListener al){
@@ -86,7 +99,6 @@ public class GUI extends JFrame{
         jb.addActionListener(al);
         jb.setIcon(c.getImage());
         leftPanel.add(jb);
-        updateGUI();
     }
 
     public void addChannelToDisplay(Channel c){
@@ -113,39 +125,31 @@ public class GUI extends JFrame{
         jmb.add(jm);
         JMenu jm2 = new JMenu("Filter");
         jmb.add(jm2);
-
         JMenuItem reload = new JMenuItem("reload");
         jm.add(reload);
-
         JMenuItem p1 = new JMenuItem("P1");
-        p1.setActionCommand("p1");
         p1.addActionListener(menuFilterAL);
         jm2.add(p1);
         JMenuItem p2 = new JMenuItem("P2");
-        p1.setActionCommand("p2");
-        p1.addActionListener(menuFilterAL);
+        p2.addActionListener(menuFilterAL);
         jm2.add(p2);
         JMenuItem p3 = new JMenuItem("P3");
-        p1.setActionCommand("p3");
-        p1.addActionListener(menuFilterAL);
+        p3.addActionListener(menuFilterAL);
         jm2.add(p3);
         JMenuItem p4 = new JMenuItem("P4");
-        p1.setActionCommand("p4");
-        p1.addActionListener(menuFilterAL);
+        p4.addActionListener(menuFilterAL);
         jm2.add(p4);
         JMenuItem other = new JMenuItem("Other");
-        p1.setActionCommand("other");
-        p1.addActionListener(menuFilterAL);
+        other.addActionListener(menuFilterAL);
         jm2.add(other);
-
         setJMenuBar(jmb);
     }
 
-    private void updateGUI(){
+    public void updateGUI(){
         leftPanel.revalidate();
         leftPanel.repaint();
-        contentPanel.revalidate();
-        contentPanel.repaint();
+        scheduleTable.revalidate();
+        scheduleTable.repaint();
         channelDisplayWindow.revalidate();
         channelDisplayWindow.repaint();
     }
