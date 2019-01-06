@@ -1,5 +1,9 @@
 package model;
 
+import javax.swing.*;
+import java.awt.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -9,6 +13,7 @@ public class Episode {
     private String title;
     private String subTitle;
     private String description;
+    private String imageURL;
     private Date startTime;
     private Date endTime;
     private int programID;
@@ -18,6 +23,19 @@ public class Episode {
 
     public Episode(){
         dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    }
+
+    public ImageIcon getImage(){
+        ImageIcon imageIcon = null;
+        try {
+            imageIcon = new ImageIcon(new URL(getImageURL()));
+            Image image = imageIcon.getImage();
+            Image newImg = image.getScaledInstance(100, 100,  java.awt.Image.SCALE_SMOOTH);
+            return new ImageIcon(newImg);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public String getTitle() {
@@ -90,5 +108,13 @@ public class Episode {
 
     public void setSubTitle(String subTitle) {
         this.subTitle = subTitle;
+    }
+
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
     }
 }

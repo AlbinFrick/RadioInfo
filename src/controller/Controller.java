@@ -2,10 +2,10 @@ package controller;
 
 import model.Channel;
 import model.APIReader;
+import model.Episode;
 import view.GUI;
 
 import javax.swing.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
@@ -43,7 +43,6 @@ public class Controller {
         };
 
         ActionListener menuFilterAL = e -> {
-            System.out.println(e.getActionCommand());
             switch (e.getActionCommand()){
                 case "P1": whenMenuButtonIsPressed(p1Channels);
                     break;
@@ -68,16 +67,28 @@ public class Controller {
     }
 
     private void whenChannelButtonIsPressed(Channel c) {
-        SwingUtilities.invokeLater(() -> gui.addChannelToDisplay(c));
+        new Thread(() -> {
+            gui.addChannelToDisplay(c);
+            ArrayList<Episode> episodes = c.getEpisodes();
+            gui.clearTable();
+            if (episodes == null){
+                System.out.println("hello");
+            }
+            for (Episode e : episodes) {
+                gui.addEpisodesToTable(e);
+            }
+            gui.addEpisodesToTable(episodes.get(0));
+            gui.updateGUI();
+        }).start();
     }
 
     private void whenMenuButtonIsPressed(ArrayList<Channel> channelList){
-        new Thread(()-> {
+        SwingUtilities.invokeLater(()-> {
             gui.removeChannels();
             for (Channel c : channelList) {
                 gui.addChannelButton(c, channelButtonAL);
             }
             gui.updateGUI();
-        }).start();
+        });
     }
 }

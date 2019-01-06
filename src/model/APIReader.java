@@ -10,6 +10,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
@@ -56,8 +57,18 @@ public class APIReader {
                 }
             }
 
-        } catch (ParserConfigurationException | IOException | SAXException e) {
+        } catch (ParserConfigurationException  e) {
+            System.out.println("parser configuration");
             e.printStackTrace();
+        } catch (SAXException e) {
+            System.out.println("Sax exception");
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            System.out.println("mal formed URL");
+            e.printStackTrace();
+        } catch (IOException e) {
+            System.out.println("IOException");
+            System.out.println(e.getMessage());
         }
     }
 
@@ -84,6 +95,7 @@ public class APIReader {
                             episode.setDescription(getTextContentFromNode(childNodeList, "description"));
                             episode.setStartTime(getTextContentFromNode(childNodeList, "starttimeutc"));
                             episode.setEndTime(getTextContentFromNode(childNodeList, "endtimeutc"));
+                            episode.setImageURL(getTextContentFromNode(childNodeList, "imageurl"));
                             c.addEpisode(episode);
                         }
                     }
