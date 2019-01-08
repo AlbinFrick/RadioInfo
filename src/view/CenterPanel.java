@@ -14,8 +14,9 @@ import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.TimeZone;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-public class CenterPanel {
+public class CenterPanel{
     private DefaultTableModel defaultTableModel;
     private JScrollPane scheduleScrollPane;
     private JTextArea nameTaglineArea;
@@ -24,11 +25,13 @@ public class CenterPanel {
     private JTable scheduleTable;
     private JLabel logoLabel;
     private int currentEpisodeID;
+    private int currentChannelID;
+    private String getCurrentChannelName;
     private int scheduleColumnSize = 3;
-    private ArrayList<Episode> episodes;
+    private CopyOnWriteArrayList<Episode> episodes;
 
     public CenterPanel(ActionListener actionListener){
-        episodes = new ArrayList<>();
+        episodes = new CopyOnWriteArrayList<>();
         buildCenterPanel();
         buildChannelWindowDisplay();
         buildScheduleTabel();
@@ -45,9 +48,8 @@ public class CenterPanel {
     }
 
     private void buildChannelWindowDisplay(){
-        JPanel jPanel = new JPanel();
+        GradientPanel jPanel = new GradientPanel(new Color(10, 11, 57), new Color(166, 56, 62));
         jPanel.setPreferredSize(new Dimension(540, 130));
-        jPanel.setBackground(new Color(41, 106, 166));
         jPanel.setBorder(BorderFactory.createEmptyBorder());
         channelWindowDisplay = jPanel;
         centerPanel.add(jPanel, BorderLayout.CENTER);
@@ -80,6 +82,8 @@ public class CenterPanel {
     }
 
     public void addEpisodesToTable(Episode e){
+        if (episodes.size() == 0)
+            episodes.clear();
         episodes.add(e);
         String[] row = new String[scheduleColumnSize];
         row[0] = e.getTitle();
@@ -114,6 +118,7 @@ public class CenterPanel {
             @Override
             public void valueChanged(ListSelectionEvent listSelectionEvent) {
                 currentEpisodeID = episodes.get(scheduleTable.getSelectedRow()).getProgramID();
+                currentChannelID = episodes.get(scheduleTable.getSelectedRow()).getChannelID();
                 tableListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
             }
         });
@@ -122,6 +127,11 @@ public class CenterPanel {
     public int getCurrentEpisodeID() {
         return currentEpisodeID;
     }
+
+    public int getCurrentChannelID() {
+        return currentChannelID;
+    }
+
 
     public void update(){
         centerPanel.revalidate();;

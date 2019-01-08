@@ -35,7 +35,6 @@ public class GUI extends JFrame{
         centerPanel.clearTable();
     }
 
-
     public void addChannelButton(Channel c, ActionListener al){
         westPanel.addChannelButton(c,al);
     }
@@ -64,5 +63,8 @@ public class GUI extends JFrame{
 
     public int getCurrentEpisodeID() {
         return centerPanel.getCurrentEpisodeID();
+    }
+    public int getCurrentChannelID() {
+        return centerPanel.getCurrentChannelID();
     }
 }

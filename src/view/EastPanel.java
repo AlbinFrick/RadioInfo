@@ -12,6 +12,7 @@ public class EastPanel {
     private JPanel informationWindow;
     private JLabel logo;
     private JTextArea description;
+    private JButton playButton;
 
     public EastPanel(){
         buildEastPanel();
@@ -27,9 +28,8 @@ public class EastPanel {
     }
 
     private void buildEpisodeInformationWindow(){
-        JPanel jPanel = new JPanel();
-        jPanel.setPreferredSize(new Dimension(300, 1000));
-        jPanel.setBackground(new Color(21, 5, 0));
+        GradientPanel jPanel = new GradientPanel(new Color(90, 19, 1), new Color(14, 13, 90));
+        jPanel.setPreferredSize(new Dimension(300, 940));
         jPanel.setLayout(new BorderLayout());
         informationWindow =  jPanel;
         eastPanel.add(informationWindow, BorderLayout.NORTH);
@@ -39,21 +39,26 @@ public class EastPanel {
         if (logo != null && description != null){
             informationWindow.removeAll();
         }
+       /* if (e.getImage() == null) {
+            logo = new JLabel(new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("questionMark.jpeg"))));
+        } else*/
         logo = new JLabel(e.getImage());
         description = new JTextArea(e.getDescription());
         description.setLineWrap(true);
         description.setWrapStyleWord(true);
         description.setPreferredSize(new Dimension(300, 150));
+        playButton = new JButton("Play");
+        playButton.setPreferredSize(new Dimension(150, 100));
         informationWindow.add(logo, BorderLayout.NORTH);
-        informationWindow.add(description, BorderLayout.SOUTH);
+        informationWindow.add(description, BorderLayout.CENTER);
+        informationWindow.add(playButton, BorderLayout.SOUTH);
     }
 
     public void addErrorMessageForNoSchedule(Channel c){
         if (logo != null && description != null){
             informationWindow.removeAll();
         }
-        logo = new JLabel(new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("questionMark.jpeg"))));
-
+        logo = new JLabel(new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("/questionMark.jpeg"))));
         String text = "Error for " + c.getChannelName() + ": " + c.getErrorMessage() ;
         description = new JTextArea(text);
         description.setLineWrap(true);

@@ -17,24 +17,25 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class APIReader {
     private String apiURL;
-    private ArrayList<Channel> channels;
-    private ArrayList<Channel> P1;
-    private ArrayList<Channel> P2;
-    private ArrayList<Channel> P3;
-    private ArrayList<Channel> P4;
-    private ArrayList<Channel> other;
+    private CopyOnWriteArrayList<Channel> channels;
+    private CopyOnWriteArrayList<Channel> P1;
+    private CopyOnWriteArrayList<Channel> P2;
+    private CopyOnWriteArrayList<Channel> P3;
+    private CopyOnWriteArrayList<Channel> P4;
+    private CopyOnWriteArrayList<Channel> other;
 
     public APIReader(){
         apiURL = "http://api.sr.se/api/v2/channels?pagination=false";
-        channels = new ArrayList<>();
-        P1 = new ArrayList<>();
-        P2 = new ArrayList<>();
-        P3 = new ArrayList<>();
-        P4 = new ArrayList<>();
-        other = new ArrayList<>();
+        channels = new CopyOnWriteArrayList<>();
+        P1 = new CopyOnWriteArrayList<>();
+        P2 = new CopyOnWriteArrayList<>();
+        P3 = new CopyOnWriteArrayList<>();
+        P4 = new CopyOnWriteArrayList<>();
+        other = new CopyOnWriteArrayList<>();
     }
 
     public void readChannelAPI() {
@@ -113,6 +114,8 @@ public class APIReader {
                             Episode episode = new Episode();
                             NodeList childNodeList = elem.getChildNodes();
                             episode.setProgramID(Integer.parseInt(getAttributeFromNode(childNodeList, "program", "id")));
+                            episode.setChannelID(Integer.parseInt(getAttributeFromNode(childNodeList, "channel", "id")));
+                            episode.setChannelName(getAttributeFromNode(childNodeList, "channel", "name"));
                             episode.setTitle(getTextContentFromNode(childNodeList, "title"));
                             episode.setDescription(getTextContentFromNode(childNodeList, "description"));
                             episode.setStartTime(getTextContentFromNode(childNodeList, "starttimeutc"));
@@ -179,27 +182,27 @@ public class APIReader {
         }
     }
 
-    public ArrayList<Channel> getChannels() {
+    public CopyOnWriteArrayList<Channel> getChannels() {
         return channels;
     }
 
-    public ArrayList<Channel> getP1() {
+    public CopyOnWriteArrayList<Channel> getP1() {
         return P1;
     }
 
-    public ArrayList<Channel> getP2() {
+    public CopyOnWriteArrayList<Channel> getP2() {
         return P2;
     }
 
-    public ArrayList<Channel> getP3() {
+    public CopyOnWriteArrayList<Channel> getP3() {
         return P3;
     }
 
-    public ArrayList<Channel> getP4() {
+    public CopyOnWriteArrayList<Channel> getP4() {
         return P4;
     }
 
-    public ArrayList<Channel> getOther() {
+    public CopyOnWriteArrayList<Channel> getOther() {
         return other;
     }
 }

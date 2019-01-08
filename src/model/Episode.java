@@ -19,6 +19,7 @@ public class Episode {
     private String subTitle;
     private String description;
     private String imageURL;
+    private String channelName;
     private Date startTime;
     private Date endTime;
     private int programID;
@@ -39,9 +40,11 @@ public class Episode {
             Image newImg = image.getScaledInstance(200, 200, java.awt.Image.SCALE_SMOOTH);
             return new ImageIcon(newImg);
         } catch (MalformedURLException e) {
-            System.err.println("Malformed ImageURL for episode image");
+            return null;
+           /* System.err.println("Malformed ImageURL for episode image");
+            System.err.println(e.getCause());
+            e.printStackTrace();*/
         }
-        return null;
     }
 
     public Boolean isEpisodeIn12HourWindow() {
@@ -137,5 +140,13 @@ public class Episode {
 
     public void setImageURL(String imageURL) {
         this.imageURL = imageURL;
+    }
+
+    public String getChannelName() {
+        return channelName;
+    }
+
+    public void setChannelName(String channelName) {
+        this.channelName = channelName;
     }
 }

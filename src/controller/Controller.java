@@ -11,21 +11,26 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Controller {
-    private ArrayList<Channel> channels;
-    private ArrayList<Channel> p1Channels;
-    private ArrayList<Channel> p2Channels;
-    private ArrayList<Channel> p3Channels;
-    private ArrayList<Channel> p4Channels;
-    private ArrayList<Channel> otherChannels;
+    private CopyOnWriteArrayList<Channel> channels;
+    private CopyOnWriteArrayList<Channel> p1Channels;
+    private CopyOnWriteArrayList<Channel> p2Channels;
+    private CopyOnWriteArrayList<Channel> p3Channels;
+    private CopyOnWriteArrayList<Channel> p4Channels;
+    private CopyOnWriteArrayList<Channel> otherChannels;
     private GUI gui;
+    private Boolean loading;
+    private Boolean episodeFound;
     private ActionListener channelButtonAL;
     private APIReader parser;
     private ActionListener menuReload = e -> reloadContent();
     private ActionListener tabelSelected = e -> updateEpisodeInformationWindow();
 
     public Controller(){
+        loading = false;
+        episodeFound = false;
         parser = new APIReader();
         parser.readChannelAPI();
         parser.readScheduleForThreeDaySpread();
@@ -73,22 +78,22 @@ public class Controller {
     }
 
     private void whenChannelButtonIsPressed(Channel c) {
-        new Thread(() -> {
-            gui.addChannelToDisplay(c);
-            ArrayList<Episode> episodes = c.getEpisodes();
-            gui.clearTable();
-            if (episodes.size() == 0){
-                gui.addErrorMessageForNoSchedule(c);
-            }else {
-                for (Episode e : episodes) {
-                    if (e.isEpisodeIn12HourWindow()) {
-                        gui.addEpisodesToTable(e);
-                        if (e.isBroadcasting()){
-                            System.out.println(e.getTitle());
-                        }
-                    }
-                }
-            }
+       SwingUtilities.invokeLater(() -> {
+           gui.addChannelToDisplay(c);
+           ArrayList<Episode> episodes = c.getEpisodes();
+           //gui.clearTable();
+           if (episodes.size() == 0) {
+               gui.addErrorMessageForNoSchedule(c);
+           } else {
+               for (Episode e : episodes) {
+                   if (e.isEpisodeIn12HourWindow()) {
+                       gui.addEpisodesToTable(e);
+                       if (e.isBroadcasting()) {
+                           gui.addEpisodeInformation(e);
+                       }
+                   }
+               }
+           }
             /*try {
                 AudioInputStream audioIn = AudioSystem.getAudioInputStream(new URL(c.getLiveAudioURL()));
                 Clip clip = AudioSystem.getClip();
@@ -102,10 +107,10 @@ public class Controller {
                 e.printStackTrace();
             }*/
             gui.updateGUI();
-        }).start();
+        });
     }
 
-    private void whenMenuButtonIsPressed(ArrayList<Channel> channelList){
+    private void whenMenuButtonIsPressed(CopyOnWriteArrayList<Channel> channelList){
         SwingUtilities.invokeLater(()-> {
             gui.removeChannels();
             for (Channel c : channelList) {
@@ -118,7 +123,29 @@ public class Controller {
 
     private void updateEpisodeInformationWindow(){
 
-        System.out.println(gui.getCurrentEpisodeID());
+        if (!loading) {
+            SwingUtilities.invokeLater(()->{
+                loading = true;
+                for (Channel c : channels) {
+                    if (c.getChannelID() == gui.getCurrentChannelID()){
+                        for (Episode e : c.getEpisodes()) {
+                            if (e.getProgramID() == gui.getCurrentEpisodeID()){
+                                System.out.println("Valda kanalen är: " + c.getChannelName());
+                                System.out.println("Valda programmet är: " + e.getTitle());
+                                System.out.println();
+                                episodeFound = true;
+                            }
+                        }
+                    }
+                    if (episodeFound){
+                       loading = false;
+                       return;
+                    }
+                }
+                loading = false;
+            });
+        }
+
     }
 
     private void reloadContent(){
