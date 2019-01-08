@@ -37,6 +37,7 @@ public class CenterPanel {
         JPanel jPanel = new JPanel();
         jPanel.setPreferredSize(new Dimension(540, 130));
         jPanel.setBackground(new Color(41, 106, 166));
+        jPanel.setBorder(BorderFactory.createEmptyBorder());
         channelWindowDisplay = jPanel;
         centerPanel.add(jPanel, BorderLayout.CENTER);
     }

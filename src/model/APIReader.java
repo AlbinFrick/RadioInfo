@@ -58,17 +58,17 @@ public class APIReader {
             }
 
         } catch (ParserConfigurationException  e) {
-            System.out.println("parser configuration");
+            System.err.println("parser configuration");
             e.printStackTrace();
         } catch (SAXException e) {
-            System.out.println("Sax exception");
+            System.err.println("Sax exception");
             e.printStackTrace();
         } catch (MalformedURLException e) {
-            System.out.println("mal formed URL");
+            System.err.println("mal formed URL");
             e.printStackTrace();
         } catch (IOException e) {
-            System.out.println("IOException");
-            System.out.println(e.getMessage());
+            System.err.println("IOException");
+            System.err.println(e.getMessage());
         }
     }
 

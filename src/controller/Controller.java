@@ -5,8 +5,11 @@ import model.APIReader;
 import model.Episode;
 import view.GUI;
 
+import javax.sound.sampled.*;
 import javax.swing.*;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 
 public class Controller {
@@ -71,13 +74,25 @@ public class Controller {
             gui.addChannelToDisplay(c);
             ArrayList<Episode> episodes = c.getEpisodes();
             gui.clearTable();
-            if (episodes == null){
-                System.out.println("hello");
+            if (episodes.size() == 0){
+
             }
             for (Episode e : episodes) {
                 gui.addEpisodesToTable(e);
             }
-            gui.addEpisodesToTable(episodes.get(0));
+            gui.addEpisodeInformation(episodes.get(0));
+            /*try {
+                AudioInputStream audioIn = AudioSystem.getAudioInputStream(new URL(c.getLiveAudioURL()));
+                Clip clip = AudioSystem.getClip();
+                clip.open(audioIn);
+                clip.start();
+            } catch (LineUnavailableException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (UnsupportedAudioFileException e) {
+                e.printStackTrace();
+            }*/
             gui.updateGUI();
         }).start();
     }

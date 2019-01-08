@@ -1,5 +1,6 @@
 package view;
 
+import model.Channel;
 import model.Episode;
 
 import javax.swing.*;
@@ -41,8 +42,13 @@ public class EastPanel {
         description = new JTextArea(e.getDescription());
         description.setLineWrap(true);
         description.setWrapStyleWord(true);
-        informationWindow.add(logo);
-        informationWindow.add(description);
+        description.setPreferredSize(new Dimension(300, 150));
+        informationWindow.add(logo, BorderLayout.NORTH);
+        informationWindow.add(description, BorderLayout.SOUTH);
+    }
+
+    public void addEpisodeIfNoSchedule(Channel c){
+
     }
 
     public void update(){
