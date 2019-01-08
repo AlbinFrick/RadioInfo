@@ -47,8 +47,18 @@ public class EastPanel {
         informationWindow.add(description, BorderLayout.SOUTH);
     }
 
-    public void addEpisodeIfNoSchedule(Channel c){
-
+    public void addErrorMessageForNoSchedule(Channel c){
+        if (logo != null && description != null){
+            informationWindow.removeAll();
+        }
+        logo = new JLabel(new ImageIcon("/src/questionMark.jpeg"));
+        String text = "Error for " + c.getChannelName() + ": " + c.getErrorMessage() ;
+        description = new JTextArea(text);
+        description.setLineWrap(true);
+        description.setWrapStyleWord(true);
+        description.setPreferredSize(new Dimension(300, 150));
+        informationWindow.add(logo, BorderLayout.NORTH);
+        informationWindow.add(description, BorderLayout.SOUTH);
     }
 
     public void update(){

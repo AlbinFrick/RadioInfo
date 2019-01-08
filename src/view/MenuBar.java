@@ -5,16 +5,22 @@ import java.awt.event.ActionListener;
 
 public class MenuBar {
     private JMenuBar jMenuBar;
-    public MenuBar(ActionListener menuFilterAL){
-        addMenu(menuFilterAL);
+    private ActionListener menuFilterAL;
+    private ActionListener menuReload;
+    public MenuBar(ActionListener menuFilterAL, ActionListener menuReload){
+        this.menuFilterAL = menuFilterAL;
+        this.menuReload = menuReload;
+        addMenu();
     }
-    public void addMenu(ActionListener menuFilterAL){
+
+    public void addMenu(){
         JMenuBar jmb = new JMenuBar();
         JMenu jm = new JMenu("A menu");
         jmb.add(jm);
         JMenu jm2 = new JMenu("Filter");
         jmb.add(jm2);
         JMenuItem reload = new JMenuItem("reload");
+        reload.addActionListener(menuReload);
         jm.add(reload);
         JMenuItem p1 = new JMenuItem("P1");
         p1.addActionListener(menuFilterAL);

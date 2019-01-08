@@ -12,7 +12,11 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class APIReader {
     private String apiURL;
@@ -72,16 +76,33 @@ public class APIReader {
         }
     }
 
-    public void readScheduleAPI(){
+    public void readScheduleForThreeDaySpread(){
+        String yesterday;
+        String today;
+        String tomorrow;
+
+        Date time = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        today = dateFormat.format(time);
+        int todaysdate = time.getDate();
+
+        yesterday = today.substring(0, today.length() - 1) + (todaysdate-1);
+        tomorrow = today.substring(0, today.length() - 1) + (todaysdate+1);
+
+        readScheduleAPI(yesterday);
+        readScheduleAPI(today);
+        readScheduleAPI(tomorrow);
+    }
+
+    public void readScheduleAPI(String date){
         try{
             for (Channel c: channels) {
                 if (c.getScheduleURL() == null){
                     c.setErrorMessage("This channel has no schedule");
-
                 }else {
                     DocumentBuilderFactory DBF = DocumentBuilderFactory.newInstance();
                     DocumentBuilder DB = DBF.newDocumentBuilder();
-                    Document doc = DB.parse((new URL(c.getScheduleURL() + "&pagination=false").openStream()));
+                    Document doc = DB.parse((new URL(c.getScheduleURL() + "&pagination=false" + "&" + date).openStream()));
                     doc.getDocumentElement().normalize();
 
                     NodeList scheduleList = doc.getElementsByTagName("scheduledepisode");

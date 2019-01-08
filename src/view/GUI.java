@@ -13,12 +13,12 @@ public class GUI extends JFrame{
     private CenterPanel centerPanel;
     private EastPanel eastPanel;
 
-    public GUI(ActionListener menuFilterAL){
+    public GUI(ActionListener menuFilterAL, ActionListener menuReload){
         setPreferredSize(new Dimension(1500,1000));
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         pack();
         setLayout(new BorderLayout());
-        setJMenuBar(new MenuBar(menuFilterAL).getjMenuBar());
+        setJMenuBar(new MenuBar(menuFilterAL, menuReload).getjMenuBar());
         westPanel = new WestPanel();
         centerPanel = new CenterPanel();
         eastPanel = new EastPanel();
@@ -46,6 +46,10 @@ public class GUI extends JFrame{
 
     public void addEpisodeInformation(Episode e){
         eastPanel.addEpisodeInformation(e);
+    }
+
+    public void addErrorMessageForNoSchedule(Channel c){
+        eastPanel.addErrorMessageForNoSchedule(c);
     }
 
     public void updateGUI(){

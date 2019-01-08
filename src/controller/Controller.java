@@ -21,11 +21,12 @@ public class Controller {
     private ArrayList<Channel> otherChannels;
     private GUI gui;
     private ActionListener channelButtonAL;
+    private APIReader parser;
 
     public Controller(){
-        APIReader parser = new APIReader();
+        parser = new APIReader();
         parser.readChannelAPI();
-        parser.readScheduleAPI();
+        parser.readScheduleForThreeDaySpread();
         channels = parser.getChannels();
         parser.sortChannels();
         p1Channels = parser.getP1();
@@ -60,8 +61,12 @@ public class Controller {
             }
         };
 
+        ActionListener menuReload = e ->{
+            reloadContent();
+        };
+
         SwingUtilities.invokeLater(()->{
-            gui = new GUI(menuFilterAL);
+            gui = new GUI(menuFilterAL, menuReload);
             gui.setVisible(true);
             for (Channel c: channels) {
                 gui.addChannelButton(c, channelButtonAL);
@@ -75,12 +80,13 @@ public class Controller {
             ArrayList<Episode> episodes = c.getEpisodes();
             gui.clearTable();
             if (episodes.size() == 0){
-
+                gui.addErrorMessageForNoSchedule(c);
+            }else {
+                for (Episode e : episodes) {
+                    gui.addEpisodesToTable(e);
+                }
+                gui.addEpisodeInformation(episodes.get(0));
             }
-            for (Episode e : episodes) {
-                gui.addEpisodesToTable(e);
-            }
-            gui.addEpisodeInformation(episodes.get(0));
             /*try {
                 AudioInputStream audioIn = AudioSystem.getAudioInputStream(new URL(c.getLiveAudioURL()));
                 Clip clip = AudioSystem.getClip();
@@ -103,6 +109,21 @@ public class Controller {
             for (Channel c : channelList) {
                 gui.addChannelButton(c, channelButtonAL);
             }
+            gui.updateGUI();
+        });
+    }
+
+    private void reloadContent(){
+        SwingUtilities.invokeLater(()-> {
+            parser.readChannelAPI();
+            parser.readScheduleForThreeDaySpread();
+            channels = parser.getChannels();
+            parser.sortChannels();
+            p1Channels = parser.getP1();
+            p2Channels = parser.getP2();
+            p3Channels = parser.getP3();
+            p4Channels = parser.getP4();
+            otherChannels = parser.getOther();
             gui.updateGUI();
         });
     }
