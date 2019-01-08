@@ -22,6 +22,8 @@ public class Controller {
     private GUI gui;
     private ActionListener channelButtonAL;
     private APIReader parser;
+    private ActionListener menuReload = e -> reloadContent();
+    private ActionListener tabelSelected = e -> updateEpisodeInformationWindow();
 
     public Controller(){
         parser = new APIReader();
@@ -61,12 +63,8 @@ public class Controller {
             }
         };
 
-        ActionListener menuReload = e ->{
-            reloadContent();
-        };
-
         SwingUtilities.invokeLater(()->{
-            gui = new GUI(menuFilterAL, menuReload);
+            gui = new GUI(menuFilterAL, menuReload, tabelSelected);
             gui.setVisible(true);
             for (Channel c: channels) {
                 gui.addChannelButton(c, channelButtonAL);
@@ -83,9 +81,13 @@ public class Controller {
                 gui.addErrorMessageForNoSchedule(c);
             }else {
                 for (Episode e : episodes) {
-                    gui.addEpisodesToTable(e);
+                    if (e.isEpisodeIn12HourWindow()) {
+                        gui.addEpisodesToTable(e);
+                        if (e.isBroadcasting()){
+                            System.out.println(e.getTitle());
+                        }
+                    }
                 }
-                gui.addEpisodeInformation(episodes.get(0));
             }
             /*try {
                 AudioInputStream audioIn = AudioSystem.getAudioInputStream(new URL(c.getLiveAudioURL()));
@@ -113,8 +115,13 @@ public class Controller {
         });
     }
 
+
+    private void updateEpisodeInformationWindow(){
+
+        System.out.println(gui.getCurrentEpisodeID());
+    }
+
     private void reloadContent(){
-        SwingUtilities.invokeLater(()-> {
             parser.readChannelAPI();
             parser.readScheduleForThreeDaySpread();
             channels = parser.getChannels();
@@ -124,7 +131,6 @@ public class Controller {
             p3Channels = parser.getP3();
             p4Channels = parser.getP4();
             otherChannels = parser.getOther();
-            gui.updateGUI();
-        });
+        SwingUtilities.invokeLater(()-> gui.updateGUI());
     }
 }

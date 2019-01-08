@@ -33,8 +33,7 @@ public class Channel {
             Image newImg = image.getScaledInstance(100, 100,  java.awt.Image.SCALE_SMOOTH);
             return new ImageIcon(newImg);
         } catch (MalformedURLException e) {
-            System.err.println("Mal formed ImageURL for channel image");
-
+            System.err.println("Malformed ImageURL for channel image");
         }
         return null;
     }

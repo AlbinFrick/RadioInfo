@@ -102,7 +102,7 @@ public class APIReader {
                 }else {
                     DocumentBuilderFactory DBF = DocumentBuilderFactory.newInstance();
                     DocumentBuilder DB = DBF.newDocumentBuilder();
-                    Document doc = DB.parse((new URL(c.getScheduleURL() + "&pagination=false" + "&" + date).openStream()));
+                    Document doc = DB.parse((new URL(c.getScheduleURL() + "&pagination=false" + "&date=" + date).openStream()));
                     doc.getDocumentElement().normalize();
 
                     NodeList scheduleList = doc.getElementsByTagName("scheduledepisode");
@@ -112,6 +112,7 @@ public class APIReader {
                             Element elem = (Element) nNode1;
                             Episode episode = new Episode();
                             NodeList childNodeList = elem.getChildNodes();
+                            episode.setProgramID(Integer.parseInt(getAttributeFromNode(childNodeList, "program", "id")));
                             episode.setTitle(getTextContentFromNode(childNodeList, "title"));
                             episode.setDescription(getTextContentFromNode(childNodeList, "description"));
                             episode.setStartTime(getTextContentFromNode(childNodeList, "starttimeutc"));
@@ -136,6 +137,18 @@ public class APIReader {
             return getTextContentFromNode(childLiveaudio, "url");
         }else
             return null;
+    }
+
+    private String getAttributeFromNode(NodeList nl, String nodeName, String attribute){
+        String content = null;
+        for (int i = 0; i < nl.getLength(); i++) {
+            Node n = nl.item(i);
+            if (n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName().equals(nodeName)) {
+                Element elem = (Element) n;
+                content = elem.getAttribute("id");
+            }
+        }
+        return content;
     }
 
     private String getTextContentFromNode(NodeList nl, String nodeName){

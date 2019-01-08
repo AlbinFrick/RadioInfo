@@ -4,9 +4,16 @@ import model.Channel;
 import model.Episode;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Time;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.TimeZone;
 
 public class CenterPanel {
     private DefaultTableModel defaultTableModel;
@@ -16,13 +23,17 @@ public class CenterPanel {
     private JPanel centerPanel;
     private JTable scheduleTable;
     private JLabel logoLabel;
+    private int currentEpisodeID;
     private int scheduleColumnSize = 3;
+    private ArrayList<Episode> episodes;
 
-    public CenterPanel(){
+    public CenterPanel(ActionListener actionListener){
+        episodes = new ArrayList<>();
         buildCenterPanel();
         buildChannelWindowDisplay();
         buildScheduleTabel();
         buildScheduleScrollPane();
+        setSelectionListener(actionListener);
     }
 
     private void buildCenterPanel(){
@@ -69,10 +80,11 @@ public class CenterPanel {
     }
 
     public void addEpisodesToTable(Episode e){
+        episodes.add(e);
         String[] row = new String[scheduleColumnSize];
         row[0] = e.getTitle();
-        row[1] = new SimpleDateFormat("HH:mm").format(e.getStartTime());
-        row[2] = new SimpleDateFormat("HH:mm").format(e.getEndTime());
+        row[1] = new SimpleDateFormat("YYYY-MM-DD HH:mm").format(e.getStartTime());
+        row[2] = new SimpleDateFormat("YYYY-MM-DD HH:mm").format(e.getEndTime());
         defaultTableModel.addRow(row);
     }
 
@@ -95,6 +107,20 @@ public class CenterPanel {
         nameTaglineArea.setLayout(new GridLayout(0,2));
         channelWindowDisplay.add(logoLabel);
         channelWindowDisplay.add(nameTaglineArea);
+    }
+
+    private void setSelectionListener(ActionListener tableListener){
+        scheduleTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+            @Override
+            public void valueChanged(ListSelectionEvent listSelectionEvent) {
+                currentEpisodeID = episodes.get(scheduleTable.getSelectedRow()).getProgramID();
+                tableListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
+            }
+        });
+    }
+
+    public int getCurrentEpisodeID() {
+        return currentEpisodeID;
     }
 
     public void update(){

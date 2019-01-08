@@ -5,6 +5,7 @@ import model.Episode;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Objects;
 
 public class EastPanel {
     private JPanel eastPanel;
@@ -27,7 +28,7 @@ public class EastPanel {
 
     private void buildEpisodeInformationWindow(){
         JPanel jPanel = new JPanel();
-        jPanel.setPreferredSize(new Dimension(300, 250));
+        jPanel.setPreferredSize(new Dimension(300, 1000));
         jPanel.setBackground(new Color(21, 5, 0));
         jPanel.setLayout(new BorderLayout());
         informationWindow =  jPanel;
@@ -51,7 +52,8 @@ public class EastPanel {
         if (logo != null && description != null){
             informationWindow.removeAll();
         }
-        logo = new JLabel(new ImageIcon("/src/questionMark.jpeg"));
+        logo = new JLabel(new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("questionMark.jpeg"))));
+
         String text = "Error for " + c.getChannelName() + ": " + c.getErrorMessage() ;
         description = new JTextArea(text);
         description.setLineWrap(true);

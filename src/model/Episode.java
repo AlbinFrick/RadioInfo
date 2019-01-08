@@ -7,7 +7,12 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class Episode {
     private String title;
@@ -21,21 +26,37 @@ public class Episode {
     private int channelID;
     private DateFormat dateFormat;
 
-    public Episode(){
+    public Episode() {
         dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
 
-    public ImageIcon getImage(){
+    public ImageIcon getImage() {
         ImageIcon imageIcon = null;
         try {
             imageIcon = new ImageIcon(new URL(getImageURL()));
             Image image = imageIcon.getImage();
-            Image newImg = image.getScaledInstance(100, 100,  java.awt.Image.SCALE_SMOOTH);
+            Image newImg = image.getScaledInstance(200, 200, java.awt.Image.SCALE_SMOOTH);
             return new ImageIcon(newImg);
         } catch (MalformedURLException e) {
-            System.err.println("Mal formed ImageURL for episode image");
+            System.err.println("Malformed ImageURL for episode image");
         }
         return null;
+    }
+
+    public Boolean isEpisodeIn12HourWindow() {
+        int twelveHours = 43200000;
+        long now = new Date().getTime();
+        if (endTime.getTime() > (now - twelveHours) && startTime.getTime() < (now + twelveHours)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public Boolean isBroadcasting() {
+        long now = new Date().getTime();
+        return ((now > startTime.getTime()) && (now < endTime.getTime()));
     }
 
     public String getTitle() {
