@@ -86,10 +86,12 @@ public class APIReader {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         today = dateFormat.format(time);
         int todaysdate = time.getDate();
-
         yesterday = today.substring(0, today.length() - 1) + (todaysdate-1);
-        tomorrow = today.substring(0, today.length() - 1) + (todaysdate+1);
-
+        if ((todaysdate+1) > 10){
+            tomorrow = today.substring(0, today.length() - 1) + (todaysdate+1);
+        }else{
+            tomorrow = today.substring(0, today.length()-2) + (todaysdate+1);
+        }
         readScheduleAPI(yesterday);
         readScheduleAPI(today);
         readScheduleAPI(tomorrow);

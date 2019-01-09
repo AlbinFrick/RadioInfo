@@ -7,10 +7,6 @@ import java.net.URL;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.TimeZone;
 
@@ -41,25 +37,28 @@ public class Episode {
             return new ImageIcon(newImg);
         } catch (MalformedURLException e) {
             return null;
-           /* System.err.println("Malformed ImageURL for episode image");
-            System.err.println(e.getCause());
-            e.printStackTrace();*/
         }
     }
 
     public Boolean isEpisodeIn12HourWindow() {
         int twelveHours = 43200000;
         long now = new Date().getTime();
-        if (endTime.getTime() > (now - twelveHours) && startTime.getTime() < (now + twelveHours)) {
-            return true;
-        } else {
-            return false;
-        }
+        return ((endTime.getTime() > (now - twelveHours))&&(startTime.getTime() < (now + twelveHours)));
     }
 
     public Boolean isBroadcasting() {
         long now = new Date().getTime();
         return ((now > startTime.getTime()) && (now < endTime.getTime()));
+    }
+
+    public Boolean isBroadcastingInFuture(){
+        long now = new Date().getTime();
+        return (now < startTime.getTime());
+    }
+
+    public Boolean hasAlreadyBroadcast(){
+        long now = new Date().getTime();
+        return (endTime.getTime() < now);
     }
 
     public String getTitle() {

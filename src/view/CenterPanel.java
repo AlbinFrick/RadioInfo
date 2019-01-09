@@ -6,14 +6,12 @@ import model.Episode;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Time;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.TimeZone;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class CenterPanel{
@@ -26,7 +24,6 @@ public class CenterPanel{
     private JLabel logoLabel;
     private int currentEpisodeID;
     private int currentChannelID;
-    private String getCurrentChannelName;
     private int scheduleColumnSize = 3;
     private CopyOnWriteArrayList<Episode> episodes;
 
@@ -36,6 +33,7 @@ public class CenterPanel{
         buildChannelWindowDisplay();
         buildScheduleTabel();
         buildScheduleScrollPane();
+        changeColorOfTable();
         setSelectionListener(actionListener);
     }
 
@@ -87,12 +85,50 @@ public class CenterPanel{
         episodes.add(e);
         String[] row = new String[scheduleColumnSize];
         row[0] = e.getTitle();
-        row[1] = new SimpleDateFormat("YYYY-MM-DD HH:mm").format(e.getStartTime());
-        row[2] = new SimpleDateFormat("YYYY-MM-DD HH:mm").format(e.getEndTime());
+        row[1] = new SimpleDateFormat("HH:mm").format(e.getStartTime());
+        row[2] = new SimpleDateFormat("HH:mm").format(e.getEndTime());
         defaultTableModel.addRow(row);
     }
 
+    public void changeColorOfTable() {
+        scheduleTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(
+                    JTable table, Object value, boolean isSelected,
+                    boolean hasFocus, int row, int column) {
+                final Component component = super.getTableCellRendererComponent(
+                        table, value, isSelected, hasFocus, row, column);
+                Episode e = episodes.get(row);
+                if (e.isBroadcasting() && !isSelected){
+                    component.setBackground(new Color(0, 200, 200));
+                } else if (e.hasAlreadyBroadcast() && !isSelected){
+                    component.setBackground(Color.gray);
+                } else if (e.isBroadcastingInFuture() && !isSelected){
+                    component.setBackground(Color.white);
+                }else if (e.hasAlreadyBroadcast() && isSelected){
+                    component.setBackground(Color.darkGray);
+                }else if (e.isBroadcastingInFuture() && isSelected){
+                    component.setBackground(Color.cyan);
+                }
+              /*  if (e.isBroadcasting() && !isSelected){
+                    component.setBackground(new Color(0, 200, 200));
+                } else if (e.hasAlreadyBroadcast() && !isSelected){
+                    component.setBackground(new Color((255-(row*2)), (row*4), 0));
+                } else if (e.isBroadcastingInFuture() && !isSelected){
+                    component.setBackground(new Color(0, 255, 0, (255-(row*2))));
+                }else if (e.hasAlreadyBroadcast() && isSelected){
+                    component.setBackground(Color.gray);
+                }else if (e.isBroadcastingInFuture() && isSelected){
+                    component.setBackground(Color.cyan);
+                }*/
+
+                return component;
+            }
+        });
+    }
+
     public void clearTable(){
+        episodes.clear();
         defaultTableModel.setNumRows(0);
     }
 
@@ -117,9 +153,11 @@ public class CenterPanel{
         scheduleTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent listSelectionEvent) {
-                currentEpisodeID = episodes.get(scheduleTable.getSelectedRow()).getProgramID();
-                currentChannelID = episodes.get(scheduleTable.getSelectedRow()).getChannelID();
-                tableListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
+                if(listSelectionEvent.getValueIsAdjusting()) {
+                    currentEpisodeID = episodes.get(scheduleTable.getSelectedRow()).getProgramID();
+                    currentChannelID = episodes.get(scheduleTable.getSelectedRow()).getChannelID();
+                    tableListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, null));
+                }
             }
         });
     }
@@ -132,9 +170,8 @@ public class CenterPanel{
         return currentChannelID;
     }
 
-
     public void update(){
-        centerPanel.revalidate();;
+        centerPanel.revalidate();
         centerPanel.repaint();
     }
 }

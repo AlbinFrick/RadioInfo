@@ -39,11 +39,13 @@ public class EastPanel {
         if (logo != null && description != null){
             informationWindow.removeAll();
         }
-       /* if (e.getImage() == null) {
-            logo = new JLabel(new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("questionMark.jpeg"))));
-        } else*/
-        logo = new JLabel(e.getImage());
-        description = new JTextArea(e.getDescription());
+        if (e.getImage() == null) {
+            System.out.println(e.getImage());
+            logo = new JLabel(new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("resources/missingPic.png"))));
+        } else {
+            logo = new JLabel(e.getImage());
+        }
+        description = new JTextArea(e.getTitle() + "\n" + e.getDescription()  );
         description.setLineWrap(true);
         description.setWrapStyleWord(true);
         description.setPreferredSize(new Dimension(300, 150));
@@ -54,12 +56,15 @@ public class EastPanel {
         informationWindow.add(playButton, BorderLayout.SOUTH);
     }
 
+
     public void addErrorMessageForNoSchedule(Channel c){
         if (logo != null && description != null){
             informationWindow.removeAll();
         }
-        logo = new JLabel(new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("/questionMark.jpeg"))));
-        String text = "Error for " + c.getChannelName() + ": " + c.getErrorMessage() ;
+        String pathToImage = "resources/missingPic.png";
+        ImageIcon icon = new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource(pathToImage)));
+        logo = new JLabel(icon);
+        String text = "Error for " + c.getChannelName() + ": " + c.getErrorMessage();
         description = new JTextArea(text);
         description.setLineWrap(true);
         description.setWrapStyleWord(true);
