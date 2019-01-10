@@ -40,7 +40,6 @@ public class EastPanel {
             informationWindow.removeAll();
         }
         if (e.getImage() == null) {
-            System.out.println(e.getImage());
             logo = new JLabel(new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("resources/missingPic.png"))));
         } else {
             logo = new JLabel(e.getImage());
@@ -55,7 +54,6 @@ public class EastPanel {
         informationWindow.add(description, BorderLayout.CENTER);
         informationWindow.add(playButton, BorderLayout.SOUTH);
     }
-
 
     public void addErrorMessageForNoSchedule(Channel c){
         if (logo != null && description != null){

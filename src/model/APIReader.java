@@ -12,10 +12,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -86,18 +83,25 @@ public class APIReader {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         today = dateFormat.format(time);
         int todaysdate = time.getDate();
-        yesterday = today.substring(0, today.length() - 1) + (todaysdate-1);
-        if ((todaysdate+1) > 10){
-            tomorrow = today.substring(0, today.length() - 1) + (todaysdate+1);
+
+        if(todaysdate > 9){
+            yesterday = today.substring(0, today.length() - 2) + "0" + (todaysdate-1);
         }else{
-            tomorrow = today.substring(0, today.length()-2) + (todaysdate+1);
+            yesterday = today.substring(0, today.length() - 1) + (todaysdate-1);
         }
+
+        if ((todaysdate+1) > 10){
+            tomorrow = today.substring(0, today.length()-2) + (todaysdate+1);
+        }else{
+            tomorrow = today.substring(0, today.length()-1) + (todaysdate+1);
+        }
+
         readScheduleAPI(yesterday);
         readScheduleAPI(today);
         readScheduleAPI(tomorrow);
     }
 
-    public void readScheduleAPI(String date){
+    private void readScheduleAPI(String date){
         try{
             for (Channel c: channels) {
                 if (c.getScheduleURL() == null){

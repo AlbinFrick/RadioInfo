@@ -12,7 +12,6 @@ public class GradientPanel extends JPanel {
         this.buttomColor = buttomColor;
     }
 
-
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);

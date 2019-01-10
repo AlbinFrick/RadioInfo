@@ -56,7 +56,7 @@ public class Episode {
         return (now < startTime.getTime());
     }
 
-    public Boolean hasAlreadyBroadcast(){
+    public Boolean hasAlreadyBroadcasted(){
         long now = new Date().getTime();
         return (endTime.getTime() < now);
     }

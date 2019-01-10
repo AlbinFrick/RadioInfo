@@ -1,11 +1,11 @@
 package controller;
 
-import model.Audio;
 import model.Channel;
 import model.APIReader;
 import model.Episode;
 import view.GUI;
 import javax.swing.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -22,65 +22,48 @@ public class Controller {
     private GUI gui;
     private Boolean loading;
     private Boolean episodeFound;
-    private ActionListener channelButtonAL;
     private APIReader parser;
+    private ActionListener channelButtonAL = this::channelButtonDecider;
+    private  ActionListener menuFilterAL = this::menuButtonDecider;
     private ActionListener menuReload = e -> reloadContent();
     private ActionListener tabelSelected = e -> updateEpisodeInformationWindow();
-    private Audio audio;
 
     public Controller(){
         loading = false;
-        episodeFound = false;
-        parser = new APIReader();
-        parser.readChannelAPI();
-        parser.readScheduleForThreeDaySpread();
-        channels = parser.getChannels();
-        parser.sortChannels();
-        p1Channels = parser.getP1();
-        p2Channels = parser.getP2();
-        p3Channels = parser.getP3();
-        p4Channels = parser.getP4();
-        otherChannels = parser.getOther();
+        startTimer();
     }
 
     public void startController(){
-        startTimer();
-        channelButtonAL = e -> {
-            for (Channel c: channels) {
-                if (e.getActionCommand().equals(Integer.toString(c.getChannelID()))){
-                    whenChannelButtonIsPressed(c);
-                    break;
-                }
-            }
-        };
-
-        ActionListener menuFilterAL = e -> {
-            switch (e.getActionCommand()){
-                case "P1": whenMenuButtonIsPressed(p1Channels);
-                    break;
-                case "P2": whenMenuButtonIsPressed(p2Channels);
-                    break;
-                case "P3": whenMenuButtonIsPressed(p3Channels);
-                    break;
-                case "P4": whenMenuButtonIsPressed(p4Channels);
-                    break;
-                case "Other": whenMenuButtonIsPressed(otherChannels);
-                    break;
-            }
-        };
-
-        SwingUtilities.invokeLater(()->{
-            gui = new GUI(menuFilterAL, menuReload, tabelSelected);
-            gui.setVisible(true);
-            for (Channel c: channels) {
-                gui.addChannelButton(c, channelButtonAL);
-            }
-        });
+        SwingUtilities.invokeLater(()-> gui = new GUI(
+                menuFilterAL, menuReload, tabelSelected));
     }
 
+    private void channelButtonDecider(ActionEvent e){
+        for (Channel c: channels) {
+            if (e.getActionCommand().equals(Integer.toString(c.getChannelID()))){
+                whenChannelButtonIsPressed(c);
+                break;
+            }
+        }
+    }
+
+    private void menuButtonDecider(ActionEvent e){
+        switch (e.getActionCommand()){
+            case "P1": whenMenuButtonIsPressed(p1Channels);
+                break;
+            case "P2": whenMenuButtonIsPressed(p2Channels);
+                break;
+            case "P3": whenMenuButtonIsPressed(p3Channels);
+                break;
+            case "P4": whenMenuButtonIsPressed(p4Channels);
+                break;
+            case "Other": whenMenuButtonIsPressed(otherChannels);
+                break;
+        }
+    }
+
+
     private void whenChannelButtonIsPressed(Channel c) {
-        /*audio = new Audio(c);
-        audio.startAudio();*/
        SwingUtilities.invokeLater(() -> {
            gui.addChannelToDisplay(c);
            ArrayList<Episode> episodes = c.getEpisodes();
@@ -121,9 +104,6 @@ public class Controller {
                             if (e.getProgramID() == gui.getCurrentEpisodeID()){
                                 gui.addEpisodeInformation(e);
                                 gui.updateGUI();
-                                System.out.println("Valda kanalen är: " + c.getChannelName());
-                                System.out.println("Valda programmet är: " + e.getTitle());
-                                System.out.println();
                                 episodeFound = true;
                                 break;
                             }
@@ -141,12 +121,17 @@ public class Controller {
 
     }
 
-    private void reloadContent(){
+    private void reloadContent() {
+        if (!loading){
+            SwingUtilities.invokeLater(() -> {
+                gui.clearTable();
+                gui.updateGUI();
+            });
+        }
         SwingUtilities.invokeLater(()->{
-            gui.clearTable();
-            gui.updateGUI();
-        });
-        SwingUtilities.invokeLater(()->{
+            loading = false;
+            episodeFound = false;
+            parser = new APIReader();
             parser.readChannelAPI();
             parser.readScheduleForThreeDaySpread();
             channels = parser.getChannels();
@@ -159,6 +144,7 @@ public class Controller {
             for (Channel c: channels) {
                 gui.addChannelButton(c, channelButtonAL);
             }
+            gui.setVisible(true);
             gui.updateGUI();
         });
     }
@@ -171,7 +157,7 @@ public class Controller {
         timer.schedule(new TimerTask() {
             @Override
             public void run() {
-                reloadContent();
+                SwingUtilities.invokeLater(()->reloadContent());
             }
         }, 100, 3600000);
     }

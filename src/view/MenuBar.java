@@ -7,6 +7,7 @@ public class MenuBar {
     private JMenuBar jMenuBar;
     private ActionListener menuFilterAL;
     private ActionListener menuReload;
+
     public MenuBar(ActionListener menuFilterAL, ActionListener menuReload){
         this.menuFilterAL = menuFilterAL;
         this.menuReload = menuReload;
@@ -15,7 +16,7 @@ public class MenuBar {
 
     public void addMenu(){
         JMenuBar jmb = new JMenuBar();
-        JMenu jm = new JMenu("A menu");
+        JMenu jm = new JMenu("Reload");
         jmb.add(jm);
         JMenu jm2 = new JMenu("Filter");
         jmb.add(jm2);

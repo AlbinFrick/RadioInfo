@@ -16,8 +16,8 @@ public class WestPanel {
     }
 
     private void buildChannelWindow(){
-        JPanel jPanel = new JPanel();
-        jPanel.setBackground(new Color(215, 78, 9));
+        GradientPanel jPanel = new GradientPanel(new Color(90, 19, 1),
+                                                new Color(14, 13, 90));
         jPanel.setLayout(new GridLayout(0,3));
         westPanel = jPanel;
     }

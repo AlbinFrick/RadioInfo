@@ -46,7 +46,9 @@ public class CenterPanel{
     }
 
     private void buildChannelWindowDisplay(){
-        GradientPanel jPanel = new GradientPanel(new Color(10, 11, 57), new Color(166, 56, 62));
+        GradientPanel jPanel = new GradientPanel(
+                new Color(10, 11, 57),
+                new Color(166, 56, 62));
         jPanel.setPreferredSize(new Dimension(540, 130));
         jPanel.setBorder(BorderFactory.createEmptyBorder());
         channelWindowDisplay = jPanel;
@@ -62,8 +64,12 @@ public class CenterPanel{
         };
         scheduleTable = new JTable(defaultTableModel);
         scheduleTable.getColumnModel().getColumn(0).setHeaderValue("Program");
+        scheduleTable.getColumnModel().getColumn(1).setMaxWidth(90);
+        scheduleTable.getColumnModel().getColumn(2).setMaxWidth(90);
         scheduleTable.getColumnModel().getColumn(1).setHeaderValue("Starttid");
         scheduleTable.getColumnModel().getColumn(2).setHeaderValue("Sluttid");
+        scheduleTable.setFont(new Font("Roboto", Font.PLAIN, 14));
+        scheduleTable.setRowHeight(24);
     }
 
     private void buildScheduleScrollPane(){
@@ -91,7 +97,8 @@ public class CenterPanel{
     }
 
     public void changeColorOfTable() {
-        scheduleTable.setDefaultRenderer(Object.class, new DefaultTableCellRenderer() {
+        scheduleTable.setDefaultRenderer(
+                Object.class, new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(
                     JTable table, Object value, boolean isSelected,
@@ -101,27 +108,15 @@ public class CenterPanel{
                 Episode e = episodes.get(row);
                 if (e.isBroadcasting() && !isSelected){
                     component.setBackground(new Color(0, 200, 200));
-                } else if (e.hasAlreadyBroadcast() && !isSelected){
+                } else if (e.hasAlreadyBroadcasted() && !isSelected){
                     component.setBackground(Color.gray);
                 } else if (e.isBroadcastingInFuture() && !isSelected){
                     component.setBackground(Color.white);
-                }else if (e.hasAlreadyBroadcast() && isSelected){
+                }else if (e.hasAlreadyBroadcasted() && isSelected){
                     component.setBackground(Color.darkGray);
                 }else if (e.isBroadcastingInFuture() && isSelected){
                     component.setBackground(Color.cyan);
                 }
-              /*  if (e.isBroadcasting() && !isSelected){
-                    component.setBackground(new Color(0, 200, 200));
-                } else if (e.hasAlreadyBroadcast() && !isSelected){
-                    component.setBackground(new Color((255-(row*2)), (row*4), 0));
-                } else if (e.isBroadcastingInFuture() && !isSelected){
-                    component.setBackground(new Color(0, 255, 0, (255-(row*2))));
-                }else if (e.hasAlreadyBroadcast() && isSelected){
-                    component.setBackground(Color.gray);
-                }else if (e.isBroadcastingInFuture() && isSelected){
-                    component.setBackground(Color.cyan);
-                }*/
-
                 return component;
             }
         });
