@@ -67,4 +67,11 @@ public class GUI extends JFrame{
     public int getCurrentChannelID() {
         return centerPanel.getCurrentChannelID();
     }
+
+    public void clearAll(){
+        westPanel.removeChannels();
+        centerPanel.clearChannelWindow();
+        centerPanel.clearTable();
+        eastPanel.clearInfo();
+    }
 }

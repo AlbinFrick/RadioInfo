@@ -37,7 +37,7 @@ public class EastPanel {
 
     public void addEpisodeInformation(Episode e){
         if (logo != null && description != null){
-            informationWindow.removeAll();
+            clearInfo();
         }
         if (e.getImage() == null) {
             logo = new JLabel(new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("resources/missingPic.png"))));
@@ -57,7 +57,7 @@ public class EastPanel {
 
     public void addErrorMessageForNoSchedule(Channel c){
         if (logo != null && description != null){
-            informationWindow.removeAll();
+            clearInfo();
         }
         String pathToImage = "resources/missingPic.png";
         ImageIcon icon = new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource(pathToImage)));
@@ -76,6 +76,10 @@ public class EastPanel {
         eastPanel.repaint();
         informationWindow.revalidate();
         informationWindow.repaint();
+    }
+
+    public void clearInfo(){
+        informationWindow.removeAll();
     }
 
     public JPanel getEastPanel() {

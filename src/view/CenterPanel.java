@@ -127,9 +127,13 @@ public class CenterPanel{
         defaultTableModel.setNumRows(0);
     }
 
+    public void clearChannelWindow(){
+        channelWindowDisplay.removeAll();
+    }
+
     public void addChannelToDisplay(Channel c){
         if (logoLabel != null && nameTaglineArea != null){
-            channelWindowDisplay.removeAll();
+            clearChannelWindow();
         }
         logoLabel = new JLabel(c.getImage());
         StringBuilder nameTaglineString =  new StringBuilder();

@@ -5,14 +5,24 @@ import model.Channel;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.util.Objects;
 
 public class WestPanel {
     private JPanel westPanel;
     private JScrollPane channelScrollPane;
+    private JLabel loadingImage;
 
     public WestPanel(){
         buildChannelWindow();
         buildChannelScrollPane();
+
+        String pathToImage = "resources/loading.gif";
+        ImageIcon icon = new ImageIcon(Objects.requireNonNull
+                (getClass().getClassLoader().getResource(pathToImage)));
+        loadingImage = new JLabel(icon);
+        JPanel bajspanel = new JPanel();
+        bajspanel.setLayout(new BorderLayout());
+        westPanel.add(loadingImage);
     }
 
     private void buildChannelWindow(){
@@ -45,7 +55,6 @@ public class WestPanel {
     public void update(){
         westPanel.revalidate();
         westPanel.repaint();
-
     }
 
     public JScrollPane getChannelScrollPane() {

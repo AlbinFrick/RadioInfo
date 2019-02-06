@@ -24,7 +24,7 @@ public class Controller {
     private Boolean episodeFound;
     private APIReader parser;
     private ActionListener channelButtonAL = this::channelButtonDecider;
-    private  ActionListener menuFilterAL = this::menuButtonDecider;
+    private ActionListener menuFilterAL = this::menuButtonDecider;
     private ActionListener menuReload = e -> reloadContent();
     private ActionListener tabelSelected = e -> updateEpisodeInformationWindow();
 
@@ -121,19 +121,37 @@ public class Controller {
 
     }
 
+    /**
+     * Loads or reloads the content, A.I channels and episodes.
+     * The GUI is reset and
+     */
     private void reloadContent() {
         if (!loading){
             SwingUtilities.invokeLater(() -> {
                 gui.clearTable();
+                gui.clearAll();
                 gui.updateGUI();
             });
         }
         SwingUtilities.invokeLater(()->{
+            gui.setVisible(true);
+            System.out.println("Start updating");
+            updateContent();
+
+            gui.updateGUI();
+        });
+    }
+
+    private void updateContent(){
+        new Thread(()->{
             loading = false;
             episodeFound = false;
             parser = new APIReader();
+            System.out.println("read Channels");
             parser.readChannelAPI();
+            System.out.println("Channels done \nread episodes");
             parser.readScheduleForThreeDaySpread();
+            System.out.println("episodes done");
             channels = parser.getChannels();
             parser.sortChannels();
             p1Channels = parser.getP1();
@@ -144,13 +162,14 @@ public class Controller {
             for (Channel c: channels) {
                 gui.addChannelButton(c, channelButtonAL);
             }
-            gui.setVisible(true);
             gui.updateGUI();
-        });
+            System.out.println("content loaded");
+        }).start();
     }
 
     /**
-     * Starts a time to automatically update the channel tableau every hour.
+     * Starts a time to automatically update the channels and episodes
+     * every hour.
      */
     private void startTimer() {
         Timer timer = new Timer();
