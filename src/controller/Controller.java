@@ -12,6 +12,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * Controls the relationship between the view and the model.
+ * @author Albin Frick
+ */
 public class Controller {
     private CopyOnWriteArrayList<Channel> channels;
     private CopyOnWriteArrayList<Channel> p1Channels;
@@ -24,20 +28,86 @@ public class Controller {
     private Boolean episodeFound;
     private APIReader parser;
     private ActionListener channelButtonAL = this::channelButtonDecider;
-    private ActionListener menuFilterAL = this::menuButtonDecider;
+    private ActionListener menuFilterAL = this::filterMenuButtonDecider;
     private ActionListener menuReload = e -> reloadContent();
-    private ActionListener tabelSelected = e -> updateEpisodeInformationWindow();
+    private ActionListener tableSelected = e -> updateEpisodeInformationWindow();
 
     public Controller(){
         loading = false;
         startTimer();
     }
 
+    /**
+     * Starts the controller.
+     */
     public void startController(){
         SwingUtilities.invokeLater(()-> gui = new GUI(
-                menuFilterAL, menuReload, tabelSelected));
+                menuFilterAL, menuReload, tableSelected));
     }
 
+    /**
+     * Loads or reloads the content, A.I channels and episodes.
+     * If the applications is already running every table will
+     * be cleared and the loading gif will appear.
+     */
+    private void reloadContent() {
+        if (!loading){
+            SwingUtilities.invokeLater(() -> {
+                gui.clearAll();
+                gui.updateGUI();
+            });
+        }
+        SwingUtilities.invokeLater(()->{
+            gui.setVisible(true);
+            gui.toggleLoading(true);
+            updateContent();
+        });
+    }
+
+    /**
+     * Updates all the variables for
+     * the channels and it's respective episodes.
+     */
+    private void updateContent(){
+        new Thread(()->{
+            loading = false;
+            episodeFound = false;
+            parser = new APIReader();
+            parser.readChannelAPI();
+            parser.readScheduleForThreeDaySpread();
+            channels = parser.getChannels();
+            parser.sortChannels();
+            p1Channels = parser.getP1();
+            p2Channels = parser.getP2();
+            p3Channels = parser.getP3();
+            p4Channels = parser.getP4();
+            otherChannels = parser.getOther();
+            gui.toggleLoading(false);
+            for (Channel c: channels) {
+                gui.addChannelButton(c, channelButtonAL);
+            }
+            gui.updateGUI();
+        }).start();
+    }
+
+    /**
+     * Starts a time to automatically update the channels and episodes
+     * every hour.
+     */
+    private void startTimer() {
+        Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            @Override
+            public void run() {
+                SwingUtilities.invokeLater(()->reloadContent());
+            }
+        }, 100, 3600000);
+    }
+
+    /**
+     * Finds which of the channels that were pressed.
+     * @param e - ActionEvent
+     */
     private void channelButtonDecider(ActionEvent e){
         for (Channel c: channels) {
             if (e.getActionCommand().equals(Integer.toString(c.getChannelID()))){
@@ -47,44 +117,59 @@ public class Controller {
         }
     }
 
-    private void menuButtonDecider(ActionEvent e){
+    /**
+     * Adds the channels and the current episodes information to the user interface.
+     * If there is no schedule for the channel an error message be displayed for the
+     * user.
+     * @param c - Channel
+     */
+    private void whenChannelButtonIsPressed(Channel c) {
+        SwingUtilities.invokeLater(() -> {
+            gui.addChannelToDisplay(c);
+            ArrayList<Episode> episodes = c.getEpisodes();
+            gui.clearTable();
+            if (episodes.size() == 0) {
+                gui.addErrorMessageForNoSchedule(c);
+            } else {
+                for (Episode e : episodes) {
+                    if (e.isEpisodeIn24HourWindow()) {
+                        gui.addEpisodesToTable(e);
+                        if (e.isBroadcasting()) {
+                            gui.addEpisodeInformation(e);
+                        }
+                    }
+                }
+            }
+            gui.updateGUI();
+        });
+    }
+
+    /**
+     * Figures out which of the menu buttons in the filter
+     * menu have been pressed.
+     * @param e - ActionEvent
+     */
+    private void filterMenuButtonDecider(ActionEvent e){
         switch (e.getActionCommand()){
-            case "P1": whenMenuButtonIsPressed(p1Channels);
+            case "P1": whenFilterMenuButtonIsPressed(p1Channels);
                 break;
-            case "P2": whenMenuButtonIsPressed(p2Channels);
+            case "P2": whenFilterMenuButtonIsPressed(p2Channels);
                 break;
-            case "P3": whenMenuButtonIsPressed(p3Channels);
+            case "P3": whenFilterMenuButtonIsPressed(p3Channels);
                 break;
-            case "P4": whenMenuButtonIsPressed(p4Channels);
+            case "P4": whenFilterMenuButtonIsPressed(p4Channels);
                 break;
-            case "Other": whenMenuButtonIsPressed(otherChannels);
+            case "Other": whenFilterMenuButtonIsPressed(otherChannels);
                 break;
         }
     }
 
-
-    private void whenChannelButtonIsPressed(Channel c) {
-       SwingUtilities.invokeLater(() -> {
-           gui.addChannelToDisplay(c);
-           ArrayList<Episode> episodes = c.getEpisodes();
-           gui.clearTable();
-           if (episodes.size() == 0) {
-               gui.addErrorMessageForNoSchedule(c);
-           } else {
-               for (Episode e : episodes) {
-                   if (e.isEpisodeIn12HourWindow()) {
-                       gui.addEpisodesToTable(e);
-                       if (e.isBroadcasting()) {
-                           gui.addEpisodeInformation(e);
-                       }
-                   }
-               }
-           }
-           gui.updateGUI();
-        });
-    }
-
-    private void whenMenuButtonIsPressed(CopyOnWriteArrayList<Channel> channelList){
+    /**
+     * Removes the channels from the channel window and adds
+     * only the filtered ones.
+     * @param channelList - CopyOnWriteArrayList
+     */
+    private void whenFilterMenuButtonIsPressed(CopyOnWriteArrayList<Channel> channelList){
         SwingUtilities.invokeLater(()-> {
             gui.removeChannels();
             for (Channel c : channelList) {
@@ -94,6 +179,13 @@ public class Controller {
         });
     }
 
+    /**
+     * Updates the information for the episode pressed in the table.
+     * First the channel id from the table are matched with the list.
+     * When the right channel are found the channels episodes are searched.
+     * When the episode is four the episodes information are displayed for
+     * user and the searching stop.
+     */
     private void updateEpisodeInformationWindow(){
         if (!loading) {
             SwingUtilities.invokeLater(()->{
@@ -110,74 +202,13 @@ public class Controller {
                         }
                     }
                     if (episodeFound){
-                       loading = false;
-                       episodeFound = false;
-                       break;
+                        loading = false;
+                        episodeFound = false;
+                        break;
                     }
                 }
                 loading = false;
             });
         }
-
-    }
-
-    /**
-     * Loads or reloads the content, A.I channels and episodes.
-     * The GUI is reset and
-     */
-    private void reloadContent() {
-        if (!loading){
-            SwingUtilities.invokeLater(() -> {
-                gui.clearTable();
-                gui.clearAll();
-                gui.updateGUI();
-            });
-        }
-        SwingUtilities.invokeLater(()->{
-            gui.setVisible(true);
-            System.out.println("Start updating");
-            updateContent();
-
-            gui.updateGUI();
-        });
-    }
-
-    private void updateContent(){
-        new Thread(()->{
-            loading = false;
-            episodeFound = false;
-            parser = new APIReader();
-            System.out.println("read Channels");
-            parser.readChannelAPI();
-            System.out.println("Channels done \nread episodes");
-            parser.readScheduleForThreeDaySpread();
-            System.out.println("episodes done");
-            channels = parser.getChannels();
-            parser.sortChannels();
-            p1Channels = parser.getP1();
-            p2Channels = parser.getP2();
-            p3Channels = parser.getP3();
-            p4Channels = parser.getP4();
-            otherChannels = parser.getOther();
-            for (Channel c: channels) {
-                gui.addChannelButton(c, channelButtonAL);
-            }
-            gui.updateGUI();
-            System.out.println("content loaded");
-        }).start();
-    }
-
-    /**
-     * Starts a time to automatically update the channels and episodes
-     * every hour.
-     */
-    private void startTimer() {
-        Timer timer = new Timer();
-        timer.schedule(new TimerTask() {
-            @Override
-            public void run() {
-                SwingUtilities.invokeLater(()->reloadContent());
-            }
-        }, 100, 3600000);
     }
 }

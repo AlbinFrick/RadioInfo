@@ -16,6 +16,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * Reads and saves data from Sveriges Radios API.
+ * @author Albin Frick
+ */
 public class APIReader {
     private String apiURL;
     private CopyOnWriteArrayList<Channel> channels;
@@ -25,6 +29,11 @@ public class APIReader {
     private CopyOnWriteArrayList<Channel> P4;
     private CopyOnWriteArrayList<Channel> other;
 
+    /**
+     * The only constructor of the class.
+     * Sets the url to the api and creates arrayLists for all
+     * the channels.
+     */
     public APIReader(){
         apiURL = "http://api.sr.se/api/v2/channels?pagination=false";
         channels = new CopyOnWriteArrayList<>();
@@ -35,6 +44,11 @@ public class APIReader {
         other = new CopyOnWriteArrayList<>();
     }
 
+    /**
+     * Reads the channel data using XML DOM.
+     * Every channel are read using the name of the tag in the xml
+     * and are then stored in an arrayList.
+     */
     public void readChannelAPI() {
         try{
             DocumentBuilderFactory DBF = DocumentBuilderFactory.newInstance();
@@ -74,6 +88,12 @@ public class APIReader {
         }
     }
 
+    /**
+     * Determines what date it was, is and going to be and
+     * then calls the readScheduleAPI method for reading the
+     * schedules for every episode from yesterday, today and
+     * tomorrow.
+     */
     public void readScheduleForThreeDaySpread(){
         String yesterday;
         String today;
@@ -101,6 +121,10 @@ public class APIReader {
         readScheduleAPI(tomorrow);
     }
 
+    /**
+     *
+     * @param date
+     */
     private void readScheduleAPI(String date){
         try{
             for (Channel c: channels) {
@@ -121,7 +145,6 @@ public class APIReader {
                             NodeList childNodeList = elem.getChildNodes();
                             episode.setProgramID(Integer.parseInt(getAttributeFromNode(childNodeList, "program", "id")));
                             episode.setChannelID(Integer.parseInt(getAttributeFromNode(childNodeList, "channel", "id")));
-                            episode.setChannelName(getAttributeFromNode(childNodeList, "channel", "name"));
                             episode.setTitle(getTextContentFromNode(childNodeList, "title"));
                             episode.setDescription(getTextContentFromNode(childNodeList, "description"));
                             episode.setStartTime(getTextContentFromNode(childNodeList, "starttimeutc"));

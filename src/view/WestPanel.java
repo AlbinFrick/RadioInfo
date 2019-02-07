@@ -10,21 +10,16 @@ import java.util.Objects;
 public class WestPanel {
     private JPanel westPanel;
     private JScrollPane channelScrollPane;
-    private JLabel loadingImage;
+    private ImageIcon logo;
 
     public WestPanel(){
         buildChannelWindow();
         buildChannelScrollPane();
-
-        String pathToImage = "resources/loading.gif";
-        ImageIcon icon = new ImageIcon(Objects.requireNonNull
-                (getClass().getClassLoader().getResource(pathToImage)));
-        loadingImage = new JLabel(icon);
-        JPanel bajspanel = new JPanel();
-        bajspanel.setLayout(new BorderLayout());
-        westPanel.add(loadingImage);
     }
 
+    /**
+     * hejsdöflkjoe
+     */
     private void buildChannelWindow(){
         GradientPanel jPanel = new GradientPanel(new Color(90, 19, 1),
                                                 new Color(14, 13, 90));
@@ -48,7 +43,22 @@ public class WestPanel {
         westPanel.add(jb);
     }
 
-    public void removeChannels(){
+
+    public void toggleLoadingIcon(boolean bool){
+        if (bool) {
+            ImageIcon icon = new ImageIcon(Objects.requireNonNull(getClass()
+                    .getClassLoader().getResource("resources/loading.gif")));
+            JLabel label = new JLabel(icon);
+            JLabel dummy1 = new JLabel();
+            label.setPreferredSize(new Dimension(100,100));
+            westPanel.add(dummy1);
+            westPanel.add(label);
+        }else{
+            clearWestPanel();
+        }
+    }
+
+    public void clearWestPanel(){
         westPanel.removeAll();
     }
 
@@ -60,4 +70,6 @@ public class WestPanel {
     public JScrollPane getChannelScrollPane() {
         return channelScrollPane;
     }
+
+
 }

@@ -40,7 +40,8 @@ public class EastPanel {
             clearInfo();
         }
         if (e.getImage() == null) {
-            logo = new JLabel(new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource("resources/missingPic.png"))));
+            logo = new JLabel(new ImageIcon(Objects.requireNonNull(getClass()
+                    .getClassLoader().getResource("resources/missingPic.png"))));
         } else {
             logo = new JLabel(e.getImage());
         }
