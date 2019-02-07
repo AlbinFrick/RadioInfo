@@ -7,18 +7,25 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.Objects;
 
+/**
+ * Creates the west panel of the frame.
+ * @author Albin Frick
+ */
 public class WestPanel {
     private JPanel westPanel;
     private JScrollPane channelScrollPane;
     private ImageIcon logo;
 
+    /**
+     * The constructor builds the panel.
+     */
     public WestPanel(){
         buildChannelWindow();
         buildChannelScrollPane();
     }
 
     /**
-     * hejsdöflkjoe
+     *
      */
     private void buildChannelWindow(){
         GradientPanel jPanel = new GradientPanel(new Color(90, 19, 1),

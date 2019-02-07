@@ -30,7 +30,7 @@ public class GUI extends JFrame{
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         pack();
         setLayout(new BorderLayout());
-        setJMenuBar(new MenuBar(menuFilterAL, menuReload).getjMenuBar());
+        setJMenuBar(new MenuBar(menuFilterAL, menuReload).getJMenuBar());
         westPanel = new WestPanel();
         centerPanel = new CenterPanel(tableListener);
         eastPanel = new EastPanel();

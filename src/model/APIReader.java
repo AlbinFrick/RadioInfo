@@ -122,8 +122,9 @@ public class APIReader {
     }
 
     /**
-     *
-     * @param date
+     * Reads every episode for every channel on the given date.
+     * Every episode are read using the name of the tag in the xml sheet.
+     * @param date - String
      */
     private void readScheduleAPI(String date){
         try{
@@ -161,6 +162,12 @@ public class APIReader {
         }
     }
 
+    /**
+     * Reads the live audio tag in the xml sheet.
+     * @param liveaudio - NodeList
+     * @param i - int
+     * @return - String
+     */
     private String readLiveAudio(NodeList liveaudio, int i){
         Node node = liveaudio.item(i);
         if (node.getNodeType() == Node.ELEMENT_NODE){
@@ -171,18 +178,32 @@ public class APIReader {
             return null;
     }
 
+    /**
+     * Gets a certain attribute from a certain node name.
+     * @param nl - NodeList
+     * @param nodeName - String
+     * @param attribute - String
+     * @return - String
+     */
     private String getAttributeFromNode(NodeList nl, String nodeName, String attribute){
         String content = null;
         for (int i = 0; i < nl.getLength(); i++) {
             Node n = nl.item(i);
             if (n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName().equals(nodeName)) {
                 Element elem = (Element) n;
-                content = elem.getAttribute("id");
+                content = elem.getAttribute(attribute);
             }
         }
         return content;
     }
 
+    /**
+     * Takes a node list and a node name. Finds the corresponding node name in the
+     * list and returns its content in the form of a string
+     * @param nl - NodeList
+     * @param nodeName - String
+     * @return - String
+     */
     private String getTextContentFromNode(NodeList nl, String nodeName){
         String content = null;
         for (int i = 0; i < nl.getLength(); i++) {
@@ -195,6 +216,11 @@ public class APIReader {
         return content;
     }
 
+    /**
+     * Sorts the channels into four different lists.
+     * The sorting is done with finding which channel group
+     * the channel belongs to.
+     */
     public void sortChannels(){
         for (Channel c: channels) {
             if (c.getChannelName().startsWith("P1")){

@@ -3,18 +3,31 @@ package view;
 import javax.swing.*;
 import java.awt.event.ActionListener;
 
+/**
+ * Builds the menu of the program.
+ * @author Albin Frick
+ */
 public class MenuBar {
     private JMenuBar jMenuBar;
     private ActionListener menuFilterAL;
     private ActionListener menuReload;
 
+    /**
+     * Sets the ActionListener variables
+     * @param menuFilterAL - ActionListeners
+     * @param menuReload - ActionListeners
+     */
     public MenuBar(ActionListener menuFilterAL, ActionListener menuReload){
         this.menuFilterAL = menuFilterAL;
         this.menuReload = menuReload;
-        addMenu();
+        createMenu();
     }
 
-    public void addMenu(){
+    /**
+     * Creates the whole menu.
+     * One menu bar and two menus with the concurrent menu items inside them.
+     */
+    public void createMenu(){
         JMenuBar jmb = new JMenuBar();
         JMenu jm = new JMenu("Reload");
         jmb.add(jm);
@@ -41,7 +54,10 @@ public class MenuBar {
         jMenuBar = jmb;
     }
 
-    public JMenuBar getjMenuBar() {
+    /**
+     * @return - JMenuBar
+     */
+    public JMenuBar getJMenuBar() {
         return jMenuBar;
     }
 }

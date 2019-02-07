@@ -3,15 +3,29 @@ package view;
 import javax.swing.*;
 import java.awt.*;
 
+/**
+ * Extends JPanel and makes a JPanel with a gradient background.
+ * @author Albin Frick
+ */
 public class GradientPanel extends JPanel {
     private Color topColor;
     private Color buttomColor;
 
-    public GradientPanel(Color topColor, Color buttomColor){
+    /**
+     * Constructor of the class. Takes in two colors, bottom and top.
+     * @param topColor - Color
+     * @param bottomColor - Color
+     */
+    public GradientPanel(Color topColor, Color bottomColor){
         this.topColor = topColor;
-        this.buttomColor = buttomColor;
+        this.buttomColor = bottomColor;
     }
 
+    /**
+     * Over rides the paint component in the JPanel.
+     * Blends the given colors and renders them to the panel.
+     * @param g
+     */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
