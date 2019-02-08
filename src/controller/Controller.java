@@ -60,19 +60,20 @@ public class Controller {
         SwingUtilities.invokeLater(()->{
             gui.setVisible(true);
             gui.toggleLoading(true);
+            parser = new APIReader();
             updateContent();
         });
     }
 
     /**
-     * Updates all the variables for
-     * the channels and it's respective episodes.
+     * Updates all the variables for the channels and it's respective episodes.
+     * If there was a problem with the connection an error will be displayed
+     * for the user.
      */
     private void updateContent(){
         new Thread(()->{
             loading = false;
             episodeFound = false;
-            parser = new APIReader();
             parser.readChannelAPI();
             parser.readScheduleForThreeDaySpread();
             channels = parser.getChannels();
@@ -85,6 +86,9 @@ public class Controller {
             gui.toggleLoading(false);
             for (Channel c: channels) {
                 gui.addChannelButton(c, channelButtonAL);
+            }
+            if (!parser.getError().equals("")){
+                gui.errorMessage(parser.getError());
             }
             gui.updateGUI();
         }).start();

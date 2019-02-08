@@ -136,4 +136,11 @@ public class GUI extends JFrame{
     public void toggleLoading(Boolean bool){
         westPanel.toggleLoadingIcon(bool);
     }
+
+    /**
+     * Error message if the api didn't load.
+     */
+    public void errorMessage(String message){
+        eastPanel.addErrorMessageForNoConnection(message);
+    }
 }

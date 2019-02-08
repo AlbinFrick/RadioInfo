@@ -22,6 +22,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class APIReader {
     private String apiURL;
+    private StringBuilder error;
     private CopyOnWriteArrayList<Channel> channels;
     private CopyOnWriteArrayList<Channel> P1;
     private CopyOnWriteArrayList<Channel> P2;
@@ -35,6 +36,7 @@ public class APIReader {
      * the channels.
      */
     public APIReader(){
+        error = new StringBuilder();
         apiURL = "http://api.sr.se/api/v2/channels?pagination=false";
         channels = new CopyOnWriteArrayList<>();
         P1 = new CopyOnWriteArrayList<>();
@@ -74,17 +76,13 @@ public class APIReader {
             }
 
         } catch (ParserConfigurationException  e) {
-            System.err.println("parser configuration");
-            e.printStackTrace();
+            error.append("parser configuration");
         } catch (SAXException e) {
-            System.err.println("Sax exception");
-            e.printStackTrace();
+            error.append("Sax exception");
         } catch (MalformedURLException e) {
-            System.err.println("mal formed URL");
-            e.printStackTrace();
+            error.append("Malformed URL");
         } catch (IOException e) {
-            System.err.println("IOException");
-            System.err.println(e.getMessage());
+            error.append("Problem when opening URL as stream");
         }
     }
 
@@ -259,5 +257,9 @@ public class APIReader {
 
     public CopyOnWriteArrayList<Channel> getOther() {
         return other;
+    }
+
+    public String getError() {
+        return error.toString();
     }
 }

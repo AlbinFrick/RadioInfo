@@ -85,9 +85,33 @@ public class EastPanel {
             clearInfo();
         }
         String pathToImage = "resources/missingPic.png";
-        ImageIcon icon = new ImageIcon(Objects.requireNonNull(getClass().getClassLoader().getResource(pathToImage)));
+        ImageIcon icon = new ImageIcon(Objects.requireNonNull(
+                getClass().getClassLoader().getResource(pathToImage)));
         logo = new JLabel(icon);
         String text = "Error for " + c.getChannelName() + ": " + c.getErrorMessage();
+        description = new JTextArea(text);
+        description.setLineWrap(true);
+        description.setWrapStyleWord(true);
+        description.setPreferredSize(new Dimension(300, 150));
+        informationWindow.add(logo, BorderLayout.NORTH);
+        informationWindow.add(description, BorderLayout.SOUTH);
+    }
+
+    /**
+     * Clears the episode information window if there is something
+     * to clear and adds the error message and an image to the
+     * episode information window.
+     * @param message - String
+     */
+    public void addErrorMessageForNoConnection(String message){
+        if (logo != null && description != null){
+            clearInfo();
+        }
+        String pathToImage = "resources/noConnection.jpg";
+        ImageIcon icon = new ImageIcon(Objects.requireNonNull(
+                getClass().getClassLoader().getResource(pathToImage)));
+        logo = new JLabel(icon);
+        String text = "Connection problem: " + message;
         description = new JTextArea(text);
         description.setLineWrap(true);
         description.setWrapStyleWord(true);
