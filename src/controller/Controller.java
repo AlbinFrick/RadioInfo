@@ -34,7 +34,6 @@ public class Controller {
 
     public Controller(){
         loading = false;
-        startTimer();
     }
 
     /**
@@ -43,6 +42,7 @@ public class Controller {
     public void startController(){
         SwingUtilities.invokeLater(()-> gui = new GUI(
                 menuFilterAL, menuReload, tableSelected));
+        startTimer();
     }
 
     /**
