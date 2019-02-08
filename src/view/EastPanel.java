@@ -7,6 +7,10 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Objects;
 
+/**
+ * Creates the east panel of the frame.
+ * @author Albin Frick
+ */
 public class EastPanel {
     private JPanel eastPanel;
     private JPanel informationWindow;
@@ -14,19 +18,28 @@ public class EastPanel {
     private JTextArea description;
     private JButton playButton;
 
+    /**
+     * Builds the east panel and the episode information window.
+     */
     public EastPanel(){
         buildEastPanel();
         buildEpisodeInformationWindow();
     }
 
+    /**
+     * Creates a JPanel sets size, color and layout.
+     */
     private void buildEastPanel(){
         JPanel jPanel = new JPanel();
         jPanel.setPreferredSize(new Dimension(420, 1000));
-        jPanel.setBackground(new Color(21, 5, 120));
         jPanel.setLayout(new BorderLayout());
         eastPanel =  jPanel;
     }
 
+    /**
+     * Creates a gradient panel sets size, layout and adds it
+     * to the eastPanel JPanel to the north.
+     */
     private void buildEpisodeInformationWindow(){
         GradientPanel jPanel = new GradientPanel(new Color(90, 19, 1), new Color(14, 13, 90));
         jPanel.setPreferredSize(new Dimension(300, 940));
@@ -35,6 +48,11 @@ public class EastPanel {
         eastPanel.add(informationWindow, BorderLayout.NORTH);
     }
 
+    /**
+     * Takes in an episodes and ads the information of the episode to the
+     * episode information window.
+     * @param e - Episode
+     */
     public void addEpisodeInformation(Episode e){
         if (logo != null && description != null){
             clearInfo();
@@ -56,6 +74,12 @@ public class EastPanel {
         informationWindow.add(playButton, BorderLayout.SOUTH);
     }
 
+    /**
+     * Clears the episode information window if there is something
+     * to clear and adds the error message in the channel to the information
+     * window.
+     * @param c - Channel
+     */
     public void addErrorMessageForNoSchedule(Channel c){
         if (logo != null && description != null){
             clearInfo();
@@ -72,6 +96,9 @@ public class EastPanel {
         informationWindow.add(description, BorderLayout.SOUTH);
     }
 
+    /**
+     * Updates every element in the east panel
+     */
     public void update(){
         eastPanel.revalidate();
         eastPanel.repaint();
@@ -79,10 +106,16 @@ public class EastPanel {
         informationWindow.repaint();
     }
 
+    /**
+     * Removes every element in the information window.
+     */
     public void clearInfo(){
         informationWindow.removeAll();
     }
 
+    /**
+     * @return - JPanel
+     */
     public JPanel getEastPanel() {
         return eastPanel;
     }
