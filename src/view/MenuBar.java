@@ -51,6 +51,9 @@ public class MenuBar {
         JMenuItem other = new JMenuItem("Other");
         other.addActionListener(menuFilterAL);
         jm2.add(other);
+        JMenuItem all = new JMenuItem("All");
+        all.addActionListener(menuFilterAL);
+        jm2.add(all);
         jMenuBar = jmb;
     }
 

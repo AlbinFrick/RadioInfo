@@ -24,7 +24,7 @@ public class Controller {
     private CopyOnWriteArrayList<Channel> p4Channels;
     private CopyOnWriteArrayList<Channel> otherChannels;
     private GUI gui;
-    private Boolean loading;
+    private volatile Boolean loading;
     private Boolean episodeFound;
     private APIReader parser;
     private ActionListener channelButtonAL = this::channelButtonDecider;
@@ -154,16 +154,25 @@ public class Controller {
      * @param e - ActionEvent
      */
     private void filterMenuButtonDecider(ActionEvent e){
-        switch (e.getActionCommand()){
-            case "P1": whenFilterMenuButtonIsPressed(p1Channels);
+        switch (e.getActionCommand()) {
+            case "P1":
+                whenFilterMenuButtonIsPressed(p1Channels);
                 break;
-            case "P2": whenFilterMenuButtonIsPressed(p2Channels);
+            case "P2":
+                whenFilterMenuButtonIsPressed(p2Channels);
                 break;
-            case "P3": whenFilterMenuButtonIsPressed(p3Channels);
+            case "P3":
+                whenFilterMenuButtonIsPressed(p3Channels);
                 break;
-            case "P4": whenFilterMenuButtonIsPressed(p4Channels);
+            case "P4":
+                whenFilterMenuButtonIsPressed(p4Channels);
                 break;
-            case "Other": whenFilterMenuButtonIsPressed(otherChannels);
+            case "Other":
+                whenFilterMenuButtonIsPressed(otherChannels);
+                break;
+            case "All":
+                whenFilterMenuButtonIsPressed(channels);
+                System.out.println("hello");
                 break;
         }
     }
@@ -174,13 +183,16 @@ public class Controller {
      * @param channelList - CopyOnWriteArrayList
      */
     private void whenFilterMenuButtonIsPressed(CopyOnWriteArrayList<Channel> channelList){
-        SwingUtilities.invokeLater(()-> {
-            gui.removeChannels();
-            for (Channel c : channelList) {
-                gui.addChannelButton(c, channelButtonAL);
+        new Thread(()-> SwingUtilities.invokeLater(()-> {
+            if (!loading) {
+                gui.removeChannels();
+                for (Channel c : channelList) {
+                    gui.addChannelButton(c, channelButtonAL);
+                }
+                gui.updateGUI();
             }
-            gui.updateGUI();
-        });
+        })).start();
+
     }
 
     /**
