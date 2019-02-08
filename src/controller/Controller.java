@@ -172,7 +172,6 @@ public class Controller {
                 break;
             case "All":
                 whenFilterMenuButtonIsPressed(channels);
-                System.out.println("hello");
                 break;
         }
     }
